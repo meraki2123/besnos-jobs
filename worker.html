@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Worker Registration - Besnos Jobs</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<nav>
+
+    <h2>Besnos Jobs</h2>
+
+    <div>
+
+        <a href="index.html" data-en="Home" data-am="መነሻ">Home</a>
+
+        <a href="browse-workers.html"
+           data-en="Browse Workers"
+           data-am="ሰራተኞችን ይፈልጉ">
+            Browse Workers
+        </a>
+
+        <a href="worker.html"
+           data-en="Register Worker"
+           data-am="የሰራተኛ ምዝገባ">
+            Register Worker
+        </a>
+
+        <a href="employe.html"
+           data-en="Employers"
+           data-am="ለአሰሪዎች">
+            Employers
+        </a>
+
+        <a href="check-status.html"
+           data-en="Check Status"
+           data-am="ሁኔታን ይመልከቱ">
+            Check Status
+        </a>
+
+        <button type="button" id="languageButton" onclick="toggleLanguage()">
+            አማርኛ
+        </button>
+
+    </div>
+
+</nav>
+
+
+<section class="hero">
+
+    <h1
+        data-en="Worker Registration"
+        data-am="የሰራተኛ ምዝገባ">
+        Worker Registration
+    </h1>
+
+    <p
+        data-en="Register to become a verified worker with Besnos Jobs."
+        data-am="በBesnos Jobs የተረጋገጠ ሰራተኛ ለመሆን ይመዝገቡ።">
+        Register to become a verified worker with Besnos Jobs.
+    </p>
+
+
+    <form id="workerForm">
+
+
+        <!-- FULL NAME -->
+
+        <input
+            id="name"
+            type="text"
+            placeholder="Full Name"
+            data-placeholder-en="Full Name"
+            data-placeholder-am="ሙሉ ስም"
+            required
+        >
+
+        <br><br>
+
+
+        <!-- AGE -->
+
+        <input
+            id="age"
+            type="number"
+            placeholder="Age"
+            data-placeholder-en="Age"
+            data-placeholder-am="ዕድሜ"
+            required
+        >
+
+        <br><br>
+
+
+        <!-- GENDER -->
+
+        <select id="gender" required>
+
+            <option
+                value=""
+                data-en="Select Gender"
+                data-am="ጾታ ይምረጡ">
+                Select Gender
+            </option>
+
+            <option
+                value="Male"
+                data-en="Male"
+                data-am="ወንድ">
+                Male
+            </option>
+
+            <option
+                value="Female"
+                data-en="Female"
+                data-am="ሴት">
+                Female
+            </option>
+
+        </select>
+
+        <br><br>
+
+
+        <!-- PHONE -->
+
+        <input
+            id="phone"
+            type="tel"
+            placeholder="Phone Number"
+            data-placeholder-en="Phone Number"
+            data-placeholder-am="ስልክ ቁጥር"
+            required
+        >
+
+        <br><br>
+
+
+        <!-- REGION -->
+
+        <input
+            id="region"
+            type="text"
+            placeholder="Region"
+            data-placeholder-en="Region"
+            data-placeholder-am="ክልል"
+            required
+        >
+
+        <br><br>
+
+
+        <!-- CITY -->
+
+        <input
+            id="city"
+            type="text"
+            placeholder="City"
+            data-placeholder-en="City"
+            data-placeholder-am="ከተማ"
+            required
+        >
+
+        <br><br>
+
+
+        <!-- SUB-CITY -->
+
+        <input
+            id="subcity"
+            type="text"
+            placeholder="Sub-city"
+            data-placeholder-en="Sub-city"
+            data-placeholder-am="ክፍለ ከተማ"
+        >
+
+        <br><br>
+
+
+        <!-- JOB -->
+
+        <select id="job" required>
+
+            <option
+                value=""
+                data-en="Select Job Type"
+                data-am="የስራ አይነት ይምረጡ">
+                Select Job Type
+            </option>
+
+            <option
+                value="Nanny"
+                data-en="Nanny"
+                data-am="ሞግዚት">
+                Nanny
+            </option>
+
+            <option
+                value="Cleaner"
+                data-en="Cleaner"
+                data-am="ጽዳት ሰራተኛ">
+                Cleaner
+            </option>
+
+            <option
+                value="Driver"
+                data-en="Driver"
+                data-am="ሹፌር">
+                Driver
+            </option>
+
+            <option
+                value="Cook"
+                data-en="Cook"
+                data-am="ምግብ አብሳይ">
+                Cook
+            </option>
+
+            <option
+                value="Security Guard"
+                data-en="Security Guard"
+                data-am="ጥበቃ ሰራተኛ">
+                Security Guard
+            </option>
+
+            <option
+                value="Gardener"
+                data-en="Gardener"
+                data-am="አትክልተኛ">
+                Gardener
+            </option>
+
+            <option
+                value="Caregiver"
+                data-en="Caregiver"
+                data-am="ተንከባካቢ">
+                Caregiver
+            </option>
+
+        </select>
+
+        <br><br>
+
+
+        <!-- EXPERIENCE -->
+
+        <input
+            id="experience"
+            type="number"
+            placeholder="Years of Experience"
+            data-placeholder-en="Years of Experience"
+            data-placeholder-am="የስራ ልምድ ዓመታት"
+            min="0"
+        >
+
+        <br><br>
+
+
+        <!-- LANGUAGES -->
+
+        <input
+            id="languages"
+            type="text"
+            placeholder="Languages Spoken"
+            data-placeholder-en="Languages Spoken"
+            data-placeholder-am="የሚናገሯቸው ቋንቋዎች"
+        >
+
+        <br><br>
+
+
+        <!-- SALARY -->
+
+        <input
+            id="salary"
+            type="number"
+            placeholder="Expected Monthly Salary (ETB)"
+            data-placeholder-en="Expected Monthly Salary (ETB)"
+            data-placeholder-am="የሚፈልጉት ወርሃዊ ደመወዝ (ብር)"
+            min="0"
+        >
+
+        <br><br>
+
+
+        <!-- AVAILABILITY -->
+
+        <select id="availability" required>
+
+            <option
+                value=""
+                data-en="Available Immediately?"
+                data-am="ወዲያውኑ ለመስራት ዝግጁ ነዎት?"
+            >
+                Available Immediately?
+            </option>
+
+            <option
+                value="Yes"
+                data-en="Yes"
+                data-am="አዎ">
+                Yes
+            </option>
+
+            <option
+                value="No"
+                data-en="No"
+                data-am="አይ">
+                No
+            </option>
+
+        </select>
+
+        <br><br>
+
+
+        <!-- SUBMIT -->
+
+        <button type="submit">
+
+            <span
+                data-en="Submit Registration"
+                data-am="ምዝገባውን ያስገቡ">
+                Submit Registration
+            </span>
+
+        </button>
+
+    </form>
+
+</section>
+
+
+<footer>
+
+    <p
+        data-en="© 2026 Besnos Jobs"
+        data-am="© 2026 Besnos Jobs">
+        © 2026 Besnos Jobs
+    </p>
+
+</footer>
+
+
+<!-- Firebase -->
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+
+<!-- Firebase configuration -->
+
+<script src="firebase.js"></script>
+
+
+<!-- Besnos Jobs JavaScript -->
+
+<script src="script.js"></script>
+
+
+<!-- LANGUAGE SWITCHER -->
+
+<script>
+
+let currentLanguage =
+    localStorage.getItem("besnosLanguage") || "en";
+
+
+function setLanguage(language) {
+
+    currentLanguage = language;
+
+    localStorage.setItem(
+        "besnosLanguage",
+        language
+    );
+
+
+    // Change normal text
+
+    document
+        .querySelectorAll("[data-en]")
+        .forEach(function(element) {
+
+            element.textContent =
+                element.getAttribute(
+                    "data-" + language
+                );
+
+        });
+
+
+    // Change input placeholders
+
+    document
+        .querySelectorAll("[data-placeholder-en]")
+        .forEach(function(element) {
+
+            element.placeholder =
+                element.getAttribute(
+                    "data-placeholder-" + language
+                );
+
+        });
+
+
+    // Change select options
+
+    document
+        .querySelectorAll("option[data-en]")
+        .forEach(function(option) {
+
+            option.textContent =
+                option.getAttribute(
+                    "data-" + language
+                );
+
+        });
+
+
+    // Change language button
+
+    const button =
+        document.getElementById(
+            "languageButton"
+        );
+
+
+    if (button) {
+
+        button.textContent =
+            language === "en"
+                ? "አማርኛ"
+                : "English";
+
+    }
+
+
+    // Change page direction
+
+    document.documentElement.lang =
+        language === "am"
+            ? "am"
+            : "en";
+
+}
+
+
+function toggleLanguage() {
+
+    if (currentLanguage === "en") {
+
+        setLanguage("am");
+
+    } else {
+
+        setLanguage("en");
+
+    }
+
+}
+
+
+// Load saved language
+
+setLanguage(currentLanguage);
+
+</script>
+
+
+</body>
+
+</html>

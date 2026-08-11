@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+```
+<title>Besnos Jobs</title>
+
+<link rel="stylesheet" href="style.css">
+```
+
+</head>
+
+<body>
+
+<!-- ============================= -->
+
+<!-- NAVIGATION -->
+
+<!-- ============================= -->
+
+<nav>
+
+```
+<h2>Besnos Jobs</h2>
+
+<div>
+
+    <a href="index.html"
+       data-en="Home"
+       data-am="መነሻ">
+        Home
+    </a>
+
+    <a href="browse-workers.html"
+       data-en="Find Workers"
+       data-am="ሰራተኞችን ይፈልጉ">
+        Find Workers
+    </a>
+
+    <a href="worker.html"
+       data-en="Register as a Worker"
+       data-am="እንደ ሰራተኛ ይመዝገቡ">
+        Register as a Worker
+    </a>
+
+    <a href="employe.html"
+       data-en="For Employers"
+       data-am="ለአሰሪዎች">
+        For Employers
+    </a>
+
+    <a href="check-status.html"
+       data-en="Check Status"
+       data-am="ሁኔታን ይመልከቱ">
+        Check Status
+    </a>
+
+    <button
+        type="button"
+        id="languageButton"
+        onclick="toggleLanguage()">
+        አማርኛ
+    </button>
+
+</div>
+```
+
+</nav>
+
+<!-- ============================= -->
+
+<!-- HERO -->
+
+<!-- ============================= -->
+
+<section class="hero">
+
+```
+<div class="hero-content">
+
+    <div class="hero-badge"
+         data-en="Connecting Workers & Employers"
+         data-am="ሰራተኞችን እና አሰሪዎችን ማገናኘት">
+        Connecting Workers & Employers
+    </div>
+
+    <h1
+        data-en="Find the Right Worker for Your Needs"
+        data-am="ለፍላጎትዎ ትክክለኛውን ሰራተኛ ያግኙ">
+
+        Find the Right Worker for Your Needs
+
+    </h1>
+
+    <p
+        data-en="Besnos Jobs connects employers with reliable workers looking for opportunities."
+        data-am="Besnos Jobs አሰሪዎችን እድል ከሚፈልጉ ታማኝ ሰራተኞች ጋር ያገናኛል።">
+
+        Besnos Jobs connects employers with reliable workers
+        looking for opportunities.
+
+    </p>
+
+    <div class="hero-buttons">
+
+        <a href="browse-workers.html">
+            <button type="button">
+
+                <span
+                    data-en="Find Workers"
+                    data-am="ሰራተኞችን ይፈልጉ">
+
+                    Find Workers
+
+                </span>
+
+            </button>
+        </a>
+
+        <a href="worker.html">
+            <button type="button" class="secondary-button">
+
+                <span
+                    data-en="Register as a Worker"
+                    data-am="እንደ ሰራተኛ ይመዝገቡ">
+
+                    Register as a Worker
+
+                </span>
+
+            </button>
+        </a>
+
+    </div>
+
+</div>
+```
+
+</section>
+
+<!-- ============================= -->
+
+<!-- HOW IT WORKS -->
+
+<!-- ============================= -->
+
+<section class="content-section">
+
+```
+<div class="section-heading">
+
+    <span
+        data-en="SIMPLE PROCESS"
+        data-am="ቀላል ሂደት">
+        SIMPLE PROCESS
+    </span>
+
+    <h2
+        data-en="How Besnos Jobs Works"
+        data-am="Besnos Jobs እንዴት ይሰራል?">
+
+        How Besnos Jobs Works
+
+    </h2>
+
+    <p
+        data-en="A simple way for workers and employers to connect."
+        data-am="ሰራተኞች እና አሰሪዎች በቀላሉ የሚገናኙበት መንገድ።">
+
+        A simple way for workers and employers to connect.
+
+    </p>
+
+</div>
+
+
+<div class="cards">
+
+    <div class="card">
+
+        <div class="card-number">01</div>
+
+        <h3
+            data-en="Workers Register"
+            data-am="ሰራተኞች ይመዘገባሉ">
+
+            Workers Register
+
+        </h3>
+
+        <p
+            data-en="Workers provide their information, skills, experience, location and availability."
+            data-am="ሰራተኞች መረጃቸውን፣ ክህሎታቸውን፣ የስራ ልምዳቸውን፣ አካባቢያቸውን እና የመስራት ዝግጁነታቸውን ያስገባሉ።">
+
+            Workers provide their information,
+            skills, experience, location and availability.
+
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="card-number">02</div>
+
+        <h3
+            data-en="We Review"
+            data-am="እንገመግማለን">
+
+            We Review
+
+        </h3>
+
+        <p
+            data-en="Our team reviews worker registrations before they appear to employers."
+            data-am="ሰራተኞች ለአሰሪዎች ከመታየታቸው በፊት መረጃቸው ይገመገማል።">
+
+            Our team reviews worker registrations
+            before they appear to employers.
+
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="card-number">03</div>
+
+        <h3
+            data-en="Employers Search"
+            data-am="አሰሪዎች ይፈልጋሉ">
+
+            Employers Search
+
+        </h3>
+
+        <p
+            data-en="Employers can browse approved workers by job type and location."
+            data-am="አሰሪዎች በስራ አይነት እና በአካባቢ የተፈቀዱ ሰራተኞችን መፈለግ ይችላሉ።">
+
+            Employers can browse approved workers
+            by job type and location.
+
+        </p>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="card-number">04</div>
+
+        <h3
+            data-en="Connect"
+            data-am="ይገናኙ">
+
+            Connect
+
+        </h3>
+
+        <p
+            data-en="Employers can request contact with a worker. Once approved, the worker's phone number becomes available."
+            data-am="አሰሪዎች ከሰራተኛ ጋር እንዲገናኙ ጥያቄ ማቅረብ ይችላሉ። ከተፈቀደ በኋላ የሰራተኛው ስልክ ቁጥር ይታያል።">
+
+            Employers can request contact with a worker.
+            Once approved, the worker's phone number
+            becomes available.
+
+        </p>
+
+    </div>
+
+</div>
+```
+
+</section>
+
+<!-- ============================= -->
+
+<!-- JOB TYPES -->
+
+<!-- ============================= -->
+
+<section class="jobs-section">
+
+```
+<div class="section-heading">
+
+    <span
+        data-en="JOB OPPORTUNITIES"
+        data-am="የስራ እድሎች">
+        JOB OPPORTUNITIES
+    </span>
+
+    <h2
+        data-en="Find Workers For Different Jobs"
+        data-am="ለተለያዩ ስራዎች ሰራተኞችን ያግኙ">
+
+        Find Workers For Different Jobs
+
+    </h2>
+
+    <p
+        data-en="Find workers with the skills you need."
+        data-am="የሚፈልጉትን ክህሎት ያላቸውን ሰራተኞች ያግኙ።">
+
+        Find workers with the skills you need.
+
+    </p>
+
+</div>
+
+
+<div class="cards job-cards">
+
+    <div class="card job-card">
+
+        <div class="job-icon">👶</div>
+
+        <h3
+            data-en="Nanny"
+            data-am="ሞግዚት">
+            Nanny
+        </h3>
+
+    </div>
+
+
+    <div class="card job-card">
+
+        <div class="job-icon">🧹</div>
+
+        <h3
+            data-en="Cleaner"
+            data-am="ጽዳት ሰራተኛ">
+            Cleaner
+        </h3>
+
+    </div>
+
+
+    <div class="card job-card">
+
+        <div class="job-icon">🚗</div>
+
+        <h3
+            data-en="Driver"
+            data-am="ሹፌር">
+            Driver
+        </h3>
+
+    </div>
+
+
+    <div class="card job-card">
+
+        <div class="job-icon">🍳</div>
+
+        <h3
+            data-en="Cook"
+            data-am="ምግብ አብሳይ">
+            Cook
+        </h3>
+
+    </div>
+
+
+    <div class="card job-card">
+
+        <div class="job-icon">🛡️</div>
+
+        <h3
+            data-en="Security Guard"
+            data-am="ጥበቃ ሰራተኛ">
+            Security Guard
+        </h3>
+
+    </div>
+
+
+    <div class="card job-card">
+
+        <div class="job-icon">❤️</div>
+
+        <h3
+            data-en="Caregiver"
+            data-am="ተንከባካቢ">
+            Caregiver
+        </h3>
+
+    </div>
+
+</div>
+```
+
+</section>
+
+<!-- ============================= -->
+
+<!-- WORKER CTA -->
+
+<!-- ============================= -->
+
+<section class="cta-section">
+
+```
+<div class="cta-content">
+
+    <h2
+        data-en="Looking for Work?"
+        data-am="ስራ ይፈልጋሉ?">
+
+        Looking for Work?
+
+    </h2>
+
+    <p
+        data-en="Register your skills and experience with Besnos Jobs and become visible to employers."
+        data-am="ክህሎትዎን እና የስራ ልምድዎን በBesnos Jobs ይመዝግቡ እና ለአሰሪዎች እንዲታዩ ያድርጉ።">
+
+        Register your skills and experience with
+        Besnos Jobs and become visible to employers.
+
+    </p>
+
+    <a href="worker.html">
+
+        <button type="button">
+
+            <span
+                data-en="Register Now"
+                data-am="አሁን ይመዝገቡ">
+
+                Register Now
+
+            </span>
+
+        </button>
+
+    </a>
+
+</div>
+```
+
+</section>
+
+<!-- ============================= -->
+
+<!-- EMPLOYER CTA -->
+
+<!-- ============================= -->
+
+<section class="cta-section employer-cta">
+
+```
+<div class="cta-content">
+
+    <h2
+        data-en="Looking for a Worker?"
+        data-am="ሰራተኛ ይፈልጋሉ?">
+
+        Looking for a Worker?
+
+    </h2>
+
+    <p
+        data-en="Browse approved workers and find someone who matches your needs."
+        data-am="የተፈቀዱ ሰራተኞችን ይመልከቱ እና ከፍላጎትዎ ጋር የሚስማማ ሰራተኛ ያግኙ።">
+
+        Browse approved workers and find someone
+        who matches your needs.
+
+    </p>
+
+    <div class="hero-buttons">
+
+        <a href="browse-workers.html">
+
+            <button type="button">
+
+                <span
+                    data-en="Browse Workers"
+                    data-am="ሰራተኞችን ይፈልጉ">
+
+                    Browse Workers
+
+                </span>
+
+            </button>
+
+        </a>
+
+
+        <a href="check-status.html">
+
+            <button type="button" class="secondary-button">
+
+                <span
+                    data-en="Check Request Status"
+                    data-am="የጥያቄዎን ሁኔታ ይመልከቱ">
+
+                    Check Request Status
+
+                </span>
+
+            </button>
+
+        </a>
+
+    </div>
+
+</div>
+```
+
+</section>
+
+<!-- ============================= -->
+
+<!-- FOOTER -->
+
+<!-- ============================= -->
+
+<footer>
+
+```
+<div class="footer-content">
+
+    <h3>Besnos Jobs</h3>
+
+    <p
+        data-en="Connecting workers with opportunities."
+        data-am="ሰራተኞችን ከስራ እድሎች ጋር እናገናኛለን።">
+
+        Connecting workers with opportunities.
+
+    </p>
+
+    <p
+        data-en="© 2026 Besnos Jobs. All rights reserved."
+        data-am="© 2026 Besnos Jobs። መብቱ በሙሉ የተጠበቀ ነው።">
+
+        © 2026 Besnos Jobs. All rights reserved.
+
+    </p>
+
+</div>
+```
+
+</footer>
+
+<!-- ============================= -->
+
+<!-- LANGUAGE SCRIPT -->
+
+<!-- ============================= -->
+
+<script>
+
+let currentLanguage =
+    localStorage.getItem("besnosLanguage") || "en";
+
+
+function setLanguage(language) {
+
+    currentLanguage = language;
+
+    localStorage.setItem(
+        "besnosLanguage",
+        language
+    );
+
+
+    document
+        .querySelectorAll("[data-en]")
+        .forEach(function(element) {
+
+            element.textContent =
+                element.getAttribute(
+                    "data-" + language
+                );
+
+        });
+
+
+    const button =
+        document.getElementById(
+            "languageButton"
+        );
+
+
+    if (button) {
+
+        button.textContent =
+            language === "en"
+                ? "አማርኛ"
+                : "English";
+
+    }
+
+
+    document.documentElement.lang =
+        language === "am"
+            ? "am"
+            : "en";
+
+}
+
+
+function toggleLanguage() {
+
+    if (currentLanguage === "en") {
+
+        setLanguage("am");
+
+    }
+
+    else {
+
+        setLanguage("en");
+
+    }
+
+}
+
+
+setLanguage(currentLanguage);
+
+</script>
+
+</body>
+</html>

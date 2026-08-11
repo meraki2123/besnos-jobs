@@ -1,0 +1,690 @@
+/* =========================================
+   BESNOS JOBS - MAIN STYLE
+   Brown / Cream Theme
+========================================= */
+
+
+/* =========================================
+   GENERAL
+========================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f7f2ec;
+    color: #3d2b1f;
+    line-height: 1.6;
+}
+
+
+/* =========================================
+   NAVIGATION
+========================================= */
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    background: #4a2c20;
+    color: white;
+
+    padding: 17px 45px;
+
+    box-shadow: 0 3px 15px rgba(74, 44, 32, 0.22);
+
+    position: relative;
+    z-index: 10;
+}
+
+nav h2 {
+    margin: 0;
+    font-size: 25px;
+    letter-spacing: 0.5px;
+}
+
+nav div {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 15px;
+
+    transition: 0.3s;
+}
+
+nav a:hover {
+    color: #e5bd95;
+}
+
+
+/* =========================================
+   LANGUAGE BUTTON
+========================================= */
+
+#languageButton {
+    background: #d19a6a;
+    color: #fff;
+
+    border: none;
+
+    padding: 9px 15px;
+
+    margin: 0;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+    font-weight: bold;
+
+    transition: 0.3s;
+}
+
+#languageButton:hover {
+    background: #b77b4d;
+    transform: none;
+}
+
+
+/* =========================================
+   HERO SECTION
+========================================= */
+
+.hero {
+    position: relative;
+
+    text-align: center;
+
+    padding: 110px 20px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fffaf5,
+            #ead7c2
+        );
+}
+
+.hero-content {
+    max-width: 850px;
+    margin: auto;
+}
+
+.hero-badge {
+    display: inline-block;
+
+    background: #f1dfcc;
+    color: #7a4b35;
+
+    padding: 8px 18px;
+
+    border-radius: 30px;
+
+    font-size: 13px;
+    font-weight: bold;
+
+    margin-bottom: 20px;
+
+    letter-spacing: 0.5px;
+}
+
+.hero h1 {
+    font-size: 48px;
+
+    line-height: 1.15;
+
+    margin: 0 auto 20px;
+
+    color: #4a2c20;
+
+    max-width: 800px;
+}
+
+.hero p {
+    font-size: 19px;
+
+    max-width: 700px;
+
+    margin: 0 auto 30px;
+
+    color: #6d5546;
+}
+
+
+/* =========================================
+   HERO BUTTONS
+========================================= */
+
+.hero-buttons {
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+}
+
+.hero a {
+    text-decoration: none;
+}
+
+button {
+    background: #7a4b35;
+
+    color: white;
+
+    border: none;
+
+    padding: 14px 28px;
+
+    margin: 8px;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    transition: 0.3s;
+
+    box-shadow:
+        0 5px 12px rgba(74, 44, 32, 0.16);
+}
+
+button:hover {
+    background: #4a2c20;
+
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 8px 18px rgba(74, 44, 32, 0.22);
+}
+
+.secondary-button {
+    background: transparent;
+
+    color: #6d4330;
+
+    border: 2px solid #7a4b35;
+
+    box-shadow: none;
+}
+
+.secondary-button:hover {
+    background: #7a4b35;
+
+    color: white;
+}
+
+
+/* =========================================
+   SECTION HEADINGS
+========================================= */
+
+.content-section,
+.jobs-section {
+    padding: 75px 20px;
+}
+
+.section-heading {
+    text-align: center;
+
+    max-width: 750px;
+
+    margin: 0 auto 45px;
+}
+
+.section-heading > span {
+    color: #a56b43;
+
+    font-size: 13px;
+
+    font-weight: bold;
+
+    letter-spacing: 2px;
+}
+
+.section-heading h2 {
+    font-size: 32px;
+
+    color: #4a2c20;
+
+    margin: 8px 0 10px;
+}
+
+.section-heading p {
+    color: #765f50;
+
+    margin: 0;
+
+    font-size: 17px;
+}
+
+
+/* =========================================
+   CARDS
+========================================= */
+
+.cards {
+    display: flex;
+
+    justify-content: center;
+
+    align-items: stretch;
+
+    flex-wrap: wrap;
+
+    gap: 25px;
+
+    max-width: 1200px;
+
+    margin: auto;
+}
+
+.card {
+    background: #fffdf9;
+
+    width: 270px;
+
+    padding: 28px 24px;
+
+    border-radius: 14px;
+
+    border: 1px solid #ead8c5;
+
+    box-shadow:
+        0 6px 20px rgba(74, 44, 32, 0.08);
+
+    transition: 0.3s;
+
+    text-align: left;
+}
+
+.card:hover {
+    transform: translateY(-7px);
+
+    border-color: #c69c72;
+
+    box-shadow:
+        0 12px 28px rgba(74, 44, 32, 0.14);
+}
+
+.card-number {
+    color: #b77b4d;
+
+    font-size: 14px;
+
+    font-weight: bold;
+
+    margin-bottom: 12px;
+}
+
+.card h3 {
+    color: #6d4330;
+
+    font-size: 20px;
+
+    margin: 0 0 10px;
+}
+
+.card p {
+    color: #765f50;
+
+    line-height: 1.7;
+
+    margin: 0;
+}
+
+
+/* =========================================
+   JOB TYPES
+========================================= */
+
+.jobs-section {
+    background: #eee1d3;
+}
+
+.job-cards {
+    gap: 22px;
+}
+
+.job-card {
+    width: 175px;
+
+    text-align: center;
+
+    padding: 25px 15px;
+
+    cursor: default;
+}
+
+.job-card:hover {
+    transform: translateY(-6px);
+}
+
+.job-icon {
+    font-size: 42px;
+
+    margin-bottom: 10px;
+}
+
+.job-card h3 {
+    margin: 0;
+
+    font-size: 18px;
+
+    color: #5a3829;
+}
+
+
+/* =========================================
+   CALL TO ACTION
+========================================= */
+
+.cta-section {
+    text-align: center;
+
+    padding: 85px 20px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #6d4330,
+            #4a2c20
+        );
+
+    color: white;
+}
+
+.cta-content {
+    max-width: 750px;
+
+    margin: auto;
+}
+
+.cta-section h2 {
+    font-size: 34px;
+
+    margin: 0 0 15px;
+
+    color: white;
+}
+
+.cta-section p {
+    font-size: 17px;
+
+    color: #f3e4d5;
+
+    max-width: 650px;
+
+    margin: 0 auto 25px;
+}
+
+.cta-section button {
+    background: #d19a6a;
+
+    color: white;
+}
+
+.cta-section button:hover {
+    background: #b77b4d;
+}
+
+.cta-section .secondary-button {
+    background: transparent;
+
+    border: 2px solid #e3b98f;
+
+    color: white;
+}
+
+.cta-section .secondary-button:hover {
+    background: #d19a6a;
+
+    border-color: #d19a6a;
+}
+
+
+/* =========================================
+   EMPLOYER CTA
+========================================= */
+
+.employer-cta {
+    background: #f7f2ec;
+
+    color: #3d2b1f;
+}
+
+.employer-cta h2 {
+    color: #4a2c20;
+}
+
+.employer-cta p {
+    color: #765f50;
+}
+
+.employer-cta button {
+    background: #7a4b35;
+}
+
+.employer-cta button:hover {
+    background: #4a2c20;
+}
+
+.employer-cta .secondary-button {
+    color: #6d4330;
+
+    border-color: #7a4b35;
+}
+
+.employer-cta .secondary-button:hover {
+    color: white;
+}
+
+
+/* =========================================
+   FOOTER
+========================================= */
+
+footer {
+    background: #321e16;
+
+    color: #f5e8dc;
+
+    text-align: center;
+
+    padding: 35px 20px;
+}
+
+.footer-content {
+    max-width: 800px;
+
+    margin: auto;
+}
+
+.footer-content h3 {
+    margin: 0 0 8px;
+
+    color: white;
+
+    font-size: 22px;
+}
+
+.footer-content p {
+    margin: 6px 0;
+
+    color: #d9c3b1;
+
+    font-size: 14px;
+}
+
+
+/* =========================================
+   MOBILE NAVIGATION
+========================================= */
+
+@media (max-width: 900px) {
+
+    nav {
+        flex-direction: column;
+
+        gap: 15px;
+
+        padding: 18px 20px;
+    }
+
+    nav div {
+        justify-content: center;
+
+        flex-wrap: wrap;
+
+        gap: 12px;
+    }
+
+    nav a {
+        font-size: 14px;
+    }
+}
+
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 768px) {
+
+    .hero {
+        padding: 80px 20px;
+    }
+
+    .hero h1 {
+        font-size: 36px;
+    }
+
+    .hero p {
+        font-size: 17px;
+    }
+
+    .content-section,
+    .jobs-section {
+        padding: 55px 15px;
+    }
+
+    .section-heading h2 {
+        font-size: 28px;
+    }
+
+    .card {
+        width: 100%;
+
+        max-width: 360px;
+    }
+
+    .job-card {
+        width: 150px;
+    }
+
+    .cta-section {
+        padding: 65px 20px;
+    }
+
+    .cta-section h2 {
+        font-size: 29px;
+    }
+}
+
+
+/* =========================================
+   SMALL PHONES
+========================================= */
+
+@media (max-width: 480px) {
+
+    nav h2 {
+        font-size: 21px;
+    }
+
+    nav div {
+        gap: 9px;
+    }
+
+    nav a {
+        font-size: 13px;
+    }
+
+    #languageButton {
+        font-size: 13px;
+
+        padding: 8px 12px;
+    }
+
+    .hero {
+        padding: 65px 15px;
+    }
+
+    .hero h1 {
+        font-size: 30px;
+    }
+
+    .hero p {
+        font-size: 16px;
+    }
+
+    .hero-badge {
+        font-size: 11px;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+    }
+
+    .hero-buttons button {
+        width: 230px;
+    }
+
+    .section-heading h2 {
+        font-size: 25px;
+    }
+
+    .section-heading p {
+        font-size: 15px;
+    }
+
+    .job-card {
+        width: 140px;
+
+        padding: 20px 10px;
+    }
+
+    .job-icon {
+        font-size: 34px;
+    }
+
+    .job-card h3 {
+        font-size: 16px;
+    }
+
+    .cta-section h2 {
+        font-size: 27px;
+    }
+}

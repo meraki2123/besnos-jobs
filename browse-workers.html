@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Find Workers - Besnos Jobs</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+
+<!-- ============================= -->
+<!-- NAVIGATION -->
+<!-- ============================= -->
+
+<nav>
+
+    <h2>Besnos Jobs</h2>
+
+    <div>
+
+        <a href="index.html"
+           data-en="Home"
+           data-am="መነሻ">
+            Home
+        </a>
+
+        <a href="browse-workers.html"
+           data-en="Find Workers"
+           data-am="ሰራተኞችን ይፈልጉ">
+            Find Workers
+        </a>
+
+        <a href="worker.html"
+           data-en="Register as a Worker"
+           data-am="እንደ ሰራተኛ ይመዝገቡ">
+            Register as a Worker
+        </a>
+
+        <a href="employe.html"
+           data-en="For Employers"
+           data-am="ለአሰሪዎች">
+            For Employers
+        </a>
+
+        <a href="check-status.html"
+           data-en="Check Status"
+           data-am="ሁኔታን ይመልከቱ">
+            Check Status
+        </a>
+
+        <button
+            type="button"
+            id="languageButton"
+            onclick="toggleLanguage()">
+            አማርኛ
+        </button>
+
+    </div>
+
+</nav>
+
+
+
+<!-- ============================= -->
+<!-- HERO -->
+<!-- ============================= -->
+
+<section class="hero">
+
+    <h1
+        data-en="Find a Worker"
+        data-am="ሰራተኛ ያግኙ">
+
+        Find a Worker
+
+    </h1>
+
+
+    <p
+        data-en="Find verified workers by location and job type."
+        data-am="የተረጋገጡ ሰራተኞችን በአካባቢ እና በስራ አይነት ይፈልጉ።">
+
+        Find verified workers by location and job type.
+
+    </p>
+
+</section>
+
+
+
+<!-- ============================= -->
+<!-- SEARCH -->
+<!-- ============================= -->
+
+<section class="search">
+
+    <h2
+        data-en="Search Workers"
+        data-am="ሰራተኞችን ይፈልጉ">
+
+        Search Workers
+
+    </h2>
+
+
+    <!-- LOCATION -->
+
+    <input
+        type="text"
+        id="locationSearch"
+        placeholder="Search by city or location"
+        data-placeholder-en="Search by city or location"
+        data-placeholder-am="በከተማ ወይም በአካባቢ ይፈልጉ"
+    >
+
+
+
+    <!-- JOB TYPE -->
+
+    <select id="jobSearch">
+
+        <option
+            value="All Jobs"
+            data-en="All Jobs"
+            data-am="ሁሉም ስራዎች">
+
+            All Jobs
+
+        </option>
+
+
+        <option
+            value="Nanny"
+            data-en="Nanny"
+            data-am="ሞግዚት">
+
+            Nanny
+
+        </option>
+
+
+        <option
+            value="Cleaner"
+            data-en="Cleaner"
+            data-am="ጽዳት ሰራተኛ">
+
+            Cleaner
+
+        </option>
+
+
+        <option
+            value="Driver"
+            data-en="Driver"
+            data-am="ሹፌር">
+
+            Driver
+
+        </option>
+
+
+        <option
+            value="Cook"
+            data-en="Cook"
+            data-am="ምግብ አብሳይ">
+
+            Cook
+
+        </option>
+
+
+        <option
+            value="Security Guard"
+            data-en="Security Guard"
+            data-am="ጥበቃ ሰራተኛ">
+
+            Security Guard
+
+        </option>
+
+
+        <option
+            value="Gardener"
+            data-en="Gardener"
+            data-am="አትክልተኛ">
+
+            Gardener
+
+        </option>
+
+
+        <option
+            value="Caregiver"
+            data-en="Caregiver"
+            data-am="ተንከባካቢ">
+
+            Caregiver
+
+        </option>
+
+    </select>
+
+
+
+    <!-- SEARCH BUTTON -->
+
+    <button
+        type="button"
+        onclick="searchWorkers()">
+
+        <span
+            data-en="Search"
+            data-am="ፈልግ">
+
+            Search
+
+        </span>
+
+    </button>
+
+</section>
+
+
+
+<!-- ============================= -->
+<!-- WORKERS -->
+<!-- ============================= -->
+
+<section class="cards" id="publicWorkers">
+
+    <h3
+        data-en="Loading workers..."
+        data-am="ሰራተኞች በመጫን ላይ...">
+
+        Loading workers...
+
+    </h3>
+
+</section>
+
+
+
+<!-- ============================= -->
+<!-- FOOTER -->
+<!-- ============================= -->
+
+<footer>
+
+    <p
+        data-en="© 2026 Besnos Jobs"
+        data-am="© 2026 Besnos Jobs">
+
+        © 2026 Besnos Jobs
+
+    </p>
+
+</footer>
+
+
+
+<!-- ============================= -->
+<!-- FIREBASE -->
+<!-- ============================= -->
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+
+<!-- Firebase configuration -->
+
+<script src="firebase.js"></script>
+
+
+<!-- Besnos Jobs JavaScript -->
+
+<script src="script.js"></script>
+
+
+
+<!-- ============================= -->
+<!-- LANGUAGE SWITCHER -->
+<!-- ============================= -->
+
+<script>
+
+let currentLanguage =
+    localStorage.getItem("besnosLanguage") || "en";
+
+
+function setLanguage(language) {
+
+    currentLanguage = language;
+
+
+    localStorage.setItem(
+        "besnosLanguage",
+        language
+    );
+
+
+    /* Change normal text */
+
+    document
+        .querySelectorAll("[data-en]")
+        .forEach(function(element) {
+
+            element.textContent =
+                element.getAttribute(
+                    "data-" + language
+                );
+
+        });
+
+
+    /* Change input placeholders */
+
+    document
+        .querySelectorAll("[data-placeholder-en]")
+        .forEach(function(element) {
+
+            element.placeholder =
+                element.getAttribute(
+                    "data-placeholder-" + language
+                );
+
+        });
+
+
+    /* Change language button */
+
+    const button =
+        document.getElementById(
+            "languageButton"
+        );
+
+
+    if (button) {
+
+        button.textContent =
+            language === "en"
+                ? "አማርኛ"
+                : "English";
+
+    }
+
+
+    /* Change page language */
+
+    document.documentElement.lang =
+        language === "am"
+            ? "am"
+            : "en";
+
+}
+
+
+function toggleLanguage() {
+
+    if (currentLanguage === "en") {
+
+        setLanguage("am");
+
+    } else {
+
+        setLanguage("en");
+
+    }
+
+}
+
+
+/* Load saved language */
+
+setLanguage(currentLanguage);
+
+</script>
+
+
+</body>
+
+</html>
