@@ -1,7 +1,6 @@
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,249 +8,413 @@
     <title>Find Workers - Besnos Jobs</title>
 
     <meta name="description"
-          content="Find workers by job category and location with Besnos Jobs.">
+          content="Find workers in Ethiopia by job type and location with Besnos Jobs.">
 
     <link rel="stylesheet" href="style.css">
+
+    <style>
+        :root {
+            --blue: #1769aa;
+            --blue-dark: #104c80;
+            --blue-light: #eaf4ff;
+            --white: #ffffff;
+            --text: #263445;
+            --muted: #64748b;
+            --border: #dbe5ef;
+            --background: #f4f8fc;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--background);
+            color: var(--text);
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+
+        header {
+            background: var(--blue);
+            color: white;
+            padding: 18px 20px;
+        }
+
+        .header-inner {
+            max-width: 1100px;
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .brand {
+            color: white;
+            text-decoration: none;
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #1769aa, #104c80);
+            color: white;
+            text-align: center;
+            padding: 48px 20px;
+        }
+
+        .hero h1 {
+            margin: 0 0 10px;
+            font-size: clamp(28px, 5vw, 40px);
+        }
+
+        .hero p {
+            max-width: 650px;
+            margin: auto;
+        }
+
+        main {
+            width: min(1100px, 92%);
+            margin: 30px auto;
+        }
+
+        .search-panel {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 24px;
+            box-shadow: 0 5px 20px rgba(30, 60, 90, 0.06);
+        }
+
+        .search-panel h2 {
+            margin-top: 0;
+        }
+
+        .search-fields {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .field label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+        }
+
+        .field input,
+        .field select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #bdccdc;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+        }
+
+        .field input:focus,
+        .field select:focus {
+            outline: 2px solid #8fc8ff;
+            border-color: var(--blue);
+        }
+
+        .search-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        button,
+        .secondary-link {
+            display: inline-block;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 18px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .primary-button {
+            background: var(--blue);
+            color: white;
+        }
+
+        .primary-button:hover {
+            background: var(--blue-dark);
+        }
+
+        .secondary-button {
+            background: var(--blue-light);
+            color: var(--blue-dark);
+        }
+
+        .secondary-button:hover {
+            background: #d9ebff;
+        }
+
+        .results-heading {
+            margin: 30px 0 16px;
+        }
+
+        #publicWorkers {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        #publicWorkers > p {
+            grid-column: 1 / -1;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .worker-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(30, 60, 90, 0.05);
+            min-width: 0;
+        }
+
+        .worker-card h3 {
+            color: var(--blue-dark);
+            margin-top: 0;
+            margin-bottom: 12px;
+            overflow-wrap: anywhere;
+        }
+
+        .worker-card p {
+            overflow-wrap: anywhere;
+        }
+
+        .verified {
+            display: inline-block;
+            color: #17603a;
+            background: #e8f7ee;
+            border-radius: 20px;
+            padding: 4px 10px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .worker-card button {
+            width: 100%;
+            margin-top: 12px;
+        }
+
+        .help-panel {
+            margin-top: 28px;
+            padding: 20px;
+            background: var(--blue-light);
+            border-radius: 12px;
+        }
+
+        footer {
+            margin-top: 50px;
+            padding: 25px 15px;
+            background: #123c60;
+            color: white;
+            text-align: center;
+        }
+
+        footer p {
+            margin: 5px;
+        }
+
+        @media (max-width: 800px) {
+            #publicWorkers {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 560px) {
+            .header-inner {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            nav {
+                gap: 12px;
+            }
+
+            .search-fields,
+            #publicWorkers {
+                grid-template-columns: 1fr;
+            }
+
+            .search-panel {
+                padding: 18px;
+            }
+
+            .hero {
+                padding: 35px 16px;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-    <!-- NAVIGATION -->
-    <nav>
-        <h2>Besnos Jobs</h2>
+<header>
+    <div class="header-inner">
+        <a class="brand" href="index.html">Besnos Jobs</a>
 
-        <div>
-            <a href="index.html"
-               data-en="Home"
-               data-am="መነሻ">Home</a>
+        <nav aria-label="Main navigation">
+            <a href="index.html">Home / መነሻ</a>
+            <a href="browse-workers.html">Find Workers</a>
+            <a href="worker.html">Register as a Worker</a>
+        </nav>
+    </div>
+</header>
 
-            <a href="browse-workers.html"
-               data-en="Find Workers"
-               data-am="ሰራተኞችን ይፈልጉ">Find Workers</a>
+<section class="hero">
+    <h1>Find the Right Worker</h1>
+    <p>
+        Search for workers by job type and location.
+        Explore available profiles and request contact through Besnos Jobs.
+    </p>
+</section>
 
-            <a href="worker.html"
-               data-en="Register as a Worker"
-               data-am="እንደ ሰራተኛ ይመዝገቡ">Register as a Worker</a>
+<main>
 
-            <a href="check-status.html"
-               data-en="Check Status"
-               data-am="ሁኔታን ይመልከቱ">Check Status</a>
+    <section class="search-panel">
+        <h2>Search for Workers</h2>
 
-            <button
-                type="button"
-                id="languageButton"
-                onclick="toggleLanguage()">
-                አማርኛ
-            </button>
-        </div>
-    </nav>
-
-
-    <!-- HERO -->
-    <section class="hero">
-        <h1
-            data-en="Find a Worker"
-            data-am="ሰራተኛ ያግኙ">
-            Find a Worker
-        </h1>
-
-        <p
-            data-en="Find workers by location and job type."
-            data-am="ሰራተኞችን በአካባቢ እና በስራ አይነት ይፈልጉ።">
-            Find workers by location and job type.
+        <p>
+            Enter a job type, a location, or both to narrow your results.
         </p>
-    </section>
-
-
-    <!-- SEARCH -->
-    <section class="search">
-
-        <h2
-            data-en="Search Workers"
-            data-am="ሰራተኞችን ይፈልጉ">
-            Search Workers
-        </h2>
 
         <form id="workerSearchForm">
+            <div class="search-fields">
 
-            <!-- LOCATION -->
-            <input
-                type="text"
-                id="locationSearch"
-                name="location"
-                placeholder="Search by city or location"
-                data-placeholder-en="Search by city or location"
-                data-placeholder-am="በከተማ ወይም በአካባቢ ይፈልጉ"
-                aria-label="Search by city or location">
+                <div class="field">
+                    <label for="jobSearch">Job Type</label>
 
-            <!-- JOB TYPE -->
-            <select
-                id="jobSearch"
-                name="job"
-                aria-label="Select job category">
+                    <input
+                        type="text"
+                        id="jobSearch"
+                        name="jobSearch"
+                        list="jobTypes"
+                        placeholder="e.g. Cleaner, Driver, Cook"
+                    >
 
-                <option
-                    value="All Jobs"
-                    data-en="All Jobs"
-                    data-am="ሁሉም ስራዎች">
-                    All Jobs
-                </option>
+                    <datalist id="jobTypes">
+                        <option value="Nanny"></option>
+                        <option value="Cleaner"></option>
+                        <option value="Driver"></option>
+                        <option value="Cook"></option>
+                        <option value="Security Guard"></option>
+                        <option value="Gardener"></option>
+                        <option value="Caregiver"></option>
+                    </datalist>
+                </div>
 
-                <option value="Nanny"
-                        data-en="Nanny"
-                        data-am="ሞግዚት">
-                    Nanny
-                </option>
+                <div class="field">
+                    <label for="locationSearch">Location</label>
 
-                <option value="Cleaner"
-                        data-en="Cleaner"
-                        data-am="ጽዳት ሰራተኛ">
-                    Cleaner
-                </option>
+                    <input
+                        type="text"
+                        id="locationSearch"
+                        name="locationSearch"
+                        placeholder="e.g. Addis Ababa, Bole"
+                    >
+                </div>
 
-                <option value="Driver"
-                        data-en="Driver"
-                        data-am="ሹፌር">
-                    Driver
-                </option>
+            </div>
 
-                <option value="Cook"
-                        data-en="Cook"
-                        data-am="ምግብ አብሳይ">
-                    Cook
-                </option>
+            <div class="search-actions">
+                <button class="primary-button" type="submit">
+                    Search Workers
+                </button>
 
-                <option value="Security Guard"
-                        data-en="Security Guard"
-                        data-am="ጥበቃ ሰራተኛ">
-                    Security Guard
-                </option>
-
-                <option value="Gardener"
-                        data-en="Gardener"
-                        data-am="አትክልተኛ">
-                    Gardener
-                </option>
-
-                <option value="Caregiver"
-                        data-en="Caregiver"
-                        data-am="ተንከባካቢ">
-                    Caregiver
-                </option>
-
-            </select>
-
-            <!-- SEARCH BUTTON -->
-            <button type="submit">
-                <span
-                    data-en="Search"
-                    data-am="ፈልግ">
-                    Search
-                </span>
-            </button>
-
+                <button
+                    class="secondary-button"
+                    type="button"
+                    id="clearSearchButton"
+                >
+                    Clear Search
+                </button>
+            </div>
         </form>
     </section>
 
+    <section aria-labelledby="resultsTitle">
+        <h2 class="results-heading" id="resultsTitle">
+            Available Workers
+        </h2>
 
-    <!-- WORKER RESULTS -->
-    <section
-        class="cards"
-        id="publicWorkers"
-        aria-live="polite"
-        aria-label="Worker search results">
-
-        <h3
-            data-en="Loading workers..."
-            data-am="ሰራተኞች በመጫን ላይ...">
-            Loading workers...
-        </h3>
-
+        <div id="publicWorkers" aria-live="polite">
+            <p>Loading approved workers...</p>
+        </div>
     </section>
 
+    <section class="help-panel">
+        <h2>Are you looking for a job?</h2>
 
-    <!-- FOOTER -->
-    <footer>
-        <p
-            data-en="© 2026 Besnos Jobs"
-            data-am="© 2026 Besnos Jobs">
-            © 2026 Besnos Jobs
+        <p>
+            Register as a worker to create your profile on Besnos Jobs.
         </p>
-    </footer>
 
+        <a class="secondary-link secondary-button" href="worker.html">
+            Register as a Worker
+        </a>
+    </section>
 
-    <!-- FIREBASE -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+</main>
 
-    <script src="firebase.js"></script>
-    <script src="script.js"></script>
+<footer>
+    <p><strong>Besnos Jobs</strong></p>
+    <p>Connecting workers and employers in Ethiopia.</p>
+    <p>&copy; 2026 Besnos Jobs. All rights reserved.</p>
+</footer>
 
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
-    <!-- SEARCH FORM HANDLER -->
-    <script>
-        const workerSearchForm =
-            document.getElementById("workerSearchForm");
+<script src="firebase.js"></script>
+<script src="script.js"></script>
 
-        workerSearchForm.addEventListener("submit", function(event) {
-            event.preventDefault();
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const clearButton = document.getElementById("clearSearchButton");
+        const searchForm = document.getElementById("workerSearchForm");
 
-            if (typeof searchWorkers === "function") {
-                searchWorkers();
-            } else {
-                console.error(
-                    "searchWorkers() was not found in script.js."
-                );
-            }
-        });
-    </script>
+        if (clearButton && searchForm) {
+            clearButton.addEventListener("click", function () {
+                searchForm.reset();
 
-
-    <!-- LANGUAGE SWITCHER -->
-    <script>
-        let currentLanguage =
-            localStorage.getItem("besnosLanguage") || "en";
-
-        function setLanguage(language) {
-            currentLanguage = language;
-
-            localStorage.setItem("besnosLanguage", language);
-
-            document.querySelectorAll("[data-en][data-am]")
-                .forEach(function(element) {
-                    element.textContent =
-                        element.getAttribute("data-" + language);
-                });
-
-            document.querySelectorAll(
-                "[data-placeholder-en][data-placeholder-am]"
-            ).forEach(function(element) {
-                element.placeholder =
-                    element.getAttribute(
-                        "data-placeholder-" + language
-                    );
+                if (typeof searchWorkers === "function") {
+                    searchWorkers();
+                }
             });
-
-            const languageButton =
-                document.getElementById("languageButton");
-
-            if (languageButton) {
-                languageButton.textContent =
-                    language === "en" ? "አማርኛ" : "English";
-            }
-
-            document.documentElement.lang =
-                language === "am" ? "am" : "en";
         }
-
-        function toggleLanguage() {
-            setLanguage(
-                currentLanguage === "en" ? "am" : "en"
-            );
-        }
-
-        setLanguage(currentLanguage);
-    </script>
+    });
+</script>
 
 </body>
 </html>
