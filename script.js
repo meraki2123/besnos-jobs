@@ -1,7 +1,6 @@
 
 /* =====================================================
-   BESNOS JOBS - MAIN JAVASCRIPT
-   Worker Registration, Search, Admin & Contact Requests
+   BESNOS JOBS - COMPLETE SCRIPT
    Firebase v8 Compat
 ===================================================== */
 
@@ -26,8 +25,8 @@ function normalize(value) {
         .replace(/\s+/g, " ");
 }
 
-function showMessage(elementId, message) {
-    const element = getElement(elementId);
+function showMessage(id, message) {
+    const element = getElement(id);
 
     if (element) {
         element.textContent = message;
@@ -36,53 +35,49 @@ function showMessage(elementId, message) {
     }
 }
 
-function addText(parent, tag, text, className) {
+function addText(parent, tag, value) {
     const element = document.createElement(tag);
-    element.textContent = text == null || text === ""
-        ? "—"
-        : String(text);
-
-    if (className) {
-        element.className = className;
-    }
+    element.textContent =
+        value === undefined || value === null || value === ""
+            ? "—"
+            : String(value);
 
     parent.appendChild(element);
     return element;
 }
 
 function addDetail(parent, label, value) {
-    const paragraph = document.createElement("p");
+    const p = document.createElement("p");
     const strong = document.createElement("strong");
 
     strong.textContent = label + ": ";
-    paragraph.appendChild(strong);
-    paragraph.appendChild(
+    p.appendChild(strong);
+
+    p.appendChild(
         document.createTextNode(
-            value == null || value === "" ? "—" : String(value)
+            value === undefined || value === null || value === ""
+                ? "—"
+                : String(value)
         )
     );
 
-    parent.appendChild(paragraph);
-}
-
-function makeButton(label, callback, className) {
-    const button = document.createElement("button");
-
-    button.type = "button";
-    button.textContent = label;
-    button.addEventListener("click", callback);
-
-    if (className) {
-        button.className = className;
-    }
-
-    return button;
+    parent.appendChild(p);
 }
 
 function makeCard() {
     const card = document.createElement("div");
     card.className = "card";
     return card;
+}
+
+function makeButton(label, callback) {
+    const button = document.createElement("button");
+
+    button.type = "button";
+    button.textContent = label;
+    button.addEventListener("click", callback);
+
+    return button;
 }
 
 function databaseAvailable() {
@@ -92,7 +87,7 @@ function databaseAvailable() {
         !db
     ) {
         console.error(
-            "Firebase is not ready. Check firebase.js and script loading order."
+            "Firebase is not initialized. Check firebase.js."
         );
         return false;
     }
@@ -104,14 +99,14 @@ function workerJob(worker) {
     return worker.job || worker.jobType || worker.category || "";
 }
 
-function workerLocation(worker) {
+function workerLocationParts(worker) {
     return [
         worker.city,
         worker.subcity,
         worker.region,
         worker.location,
         worker.address
-    ].filter(Boolean).join(" ");
+    ].filter(Boolean);
 }
 
 
@@ -120,30 +115,19 @@ function workerLocation(worker) {
 ===================================================== */
 
 async function registerWorker(event) {
-    if (event) {
-        event.preventDefault();
-    }
+    if (event) event.preventDefault();
 
     if (!databaseAvailable()) {
         showMessage(
             "workerMessage",
-            "Connection error. Please refresh the page and try again."
+            "Database connection failed. Please try again."
         );
         return;
     }
 
     const name = getValue("name");
-    const age = getValue("age");
-    const gender = getValue("gender");
     const phone = getValue("phone");
-    const region = getValue("region");
-    const city = getValue("city");
-    const subcity = getValue("subcity");
     const job = getValue("job");
-    const experience = getValue("experience");
-    const languages = getValue("languages");
-    const salary = getValue("salary");
-    const availability = getValue("availability");
 
     if (!name || !phone || !job) {
         showMessage(
@@ -155,19 +139,20 @@ async function registerWorker(event) {
 
     const worker = {
         name: name,
-        age: age,
-        gender: gender,
+        age: getValue("age"),
+        gender: getValue("gender"),
         phone: phone,
-        region: region,
-        city: city,
-        subcity: subcity,
+        region: getValue("region"),
+        city: getValue("city"),
+        subcity: getValue("subcity"),
         job: job,
-        experience: experience,
-        languages: languages,
-        salary: salary,
-        availability: availability,
+        experience: getValue("experience"),
+        languages: getValue("languages"),
+        salary: getValue("salary"),
+        availability: getValue("availability"),
         status: "Pending",
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        createdAt:
+            firebase.firestore.FieldValue.serverTimestamp()
     };
 
     try {
@@ -175,68 +160,112 @@ async function registerWorker(event) {
 
         showMessage(
             "workerMessage",
-            "Registration submitted successfully! Your profile is waiting for admin approval."
+            "Registration successful! Your profile is waiting for admin approval."
         );
 
         const form = getElement("workerForm");
 
-        if (form) {
-            form.reset();
-        }
+        if (form) form.reset();
     } catch (error) {
-        console.error("Worker registration error:", error);
+        console.error("Worker registration failed:", error);
 
         showMessage(
             "workerMessage",
-            "Registration failed. Please check your internet connection or contact the administrator."
+            "Registration failed. Please check your connection and try again."
         );
     }
 }
 
 
 /* =====================================================
-   3. ADMIN LOGIN
+   3. ADMIN LOGIN - FIREBASE AUTHENTICATION
 ===================================================== */
 
-/*
-   IMPORTANT:
-   This is the existing simple login for compatibility.
-   It is NOT secure because credentials in JavaScript
-   can be viewed by website visitors.
+async function adminLogin(event) {
+    if (event) event.preventDefault();
 
-   Replace it with Firebase Authentication before using
-   this site for sensitive or real administrative work.
-*/
-
-function adminLogin(event) {
-    if (event) {
-        event.preventDefault();
-    }
-
-    const username = getValue("username");
+    const email = getValue("username");
     const password = getValue("password");
+    const button = getElement("loginButton");
 
-    if (username === "admin" && password === "12345") {
-        window.location.href = "admin.html";
-    } else {
+    if (
+        typeof firebase === "undefined" ||
+        typeof firebase.auth !== "function"
+    ) {
         showMessage(
             "loginMessage",
-            "Incorrect username or password."
+            "Firebase Authentication is not loaded. Check your login page."
         );
+        return;
+    }
+
+    if (!email || !password) {
+        showMessage(
+            "loginMessage",
+            "Please enter your email and password."
+        );
+        return;
+    }
+
+    if (button) {
+        button.disabled = true;
+        button.textContent = "Signing in...";
+    }
+
+    try {
+        await firebase.auth().signInWithEmailAndPassword(
+            email,
+            password
+        );
+
+        window.location.href = "admin.html";
+    } catch (error) {
+        console.error("Sign-in failed:", error.code);
+
+        showMessage(
+            "loginMessage",
+            "Sign-in failed. Check your email and password, then try again."
+        );
+    } finally {
+        if (button) {
+            button.disabled = false;
+            button.textContent = "Sign In";
+        }
     }
 }
 
 
 /* =====================================================
-   4. ADMIN - LOAD WORKERS
+   4. ADMIN LOGOUT
+===================================================== */
+
+async function adminLogout() {
+    if (
+        typeof firebase === "undefined" ||
+        typeof firebase.auth !== "function"
+    ) {
+        window.location.href = "admin-login.html";
+        return;
+    }
+
+    try {
+        await firebase.auth().signOut();
+        window.location.href = "admin-login.html";
+    } catch (error) {
+        console.error("Logout failed:", error);
+        alert("Could not sign out. Please try again.");
+    }
+}
+
+
+/* =====================================================
+   5. ADMIN - LOAD WORKER REGISTRATIONS
 ===================================================== */
 
 async function loadWorkers() {
     const workerList = getElement("workerList");
 
-    if (!workerList || !databaseAvailable()) {
-        return;
-    }
+    if (!workerList || !databaseAvailable()) return;
 
     workerList.replaceChildren();
     addText(workerList, "p", "Loading worker registrations...");
@@ -256,6 +285,7 @@ async function loadWorkers() {
             const card = makeCard();
 
             addText(card, "h3", worker.name || "Unnamed worker");
+
             addDetail(card, "Job", workerJob(worker));
             addDetail(card, "Phone", worker.phone);
             addDetail(card, "City", worker.city);
@@ -263,52 +293,47 @@ async function loadWorkers() {
             addDetail(card, "Region", worker.region);
             addDetail(card, "Status", worker.status || "Pending");
 
-            const approveButton = makeButton(
-                "Approve",
-                function () {
+            card.appendChild(
+                makeButton("Approve", function () {
                     updateWorkerStatus(doc.id, "Approved");
-                }
+                })
             );
 
-            const rejectButton = makeButton(
-                "Reject",
-                function () {
+            card.appendChild(
+                makeButton("Reject", function () {
                     updateWorkerStatus(doc.id, "Rejected");
-                }
+                })
             );
 
-            card.appendChild(approveButton);
-            card.appendChild(rejectButton);
             workerList.appendChild(card);
         });
     } catch (error) {
         console.error("Loading workers failed:", error);
 
         workerList.replaceChildren();
+
         addText(
             workerList,
             "p",
-            "Could not load workers. Check Firebase permissions and connection."
+            "Could not load workers. Check your Firebase permissions."
         );
     }
 }
 
 async function updateWorkerStatus(workerId, status) {
-    if (!databaseAvailable()) {
-        return;
-    }
+    if (!databaseAvailable()) return;
 
     try {
         await db.collection("workers")
             .doc(workerId)
             .update({ status: status });
 
-        alert("Worker status updated to " + status + ".");
+        alert("Worker status updated: " + status);
 
         await loadWorkers();
         await loadPublicWorkers();
     } catch (error) {
-        console.error("Updating worker status failed:", error);
+        console.error("Worker update failed:", error);
 
         alert(
             "Could not update worker status. Check your Firebase permissions."
@@ -318,20 +343,18 @@ async function updateWorkerStatus(workerId, status) {
 
 
 /* =====================================================
-   5. PUBLIC WORKER SEARCH
+   6. PUBLIC APPROVED WORKERS
 ===================================================== */
 
 let approvedWorkersCache = [];
 
 async function loadPublicWorkers() {
-    const publicWorkers = getElement("publicWorkers");
+    const container = getElement("publicWorkers");
 
-    if (!publicWorkers || !databaseAvailable()) {
-        return;
-    }
+    if (!container || !databaseAvailable()) return;
 
-    publicWorkers.replaceChildren();
-    addText(publicWorkers, "p", "Loading approved workers...");
+    container.replaceChildren();
+    addText(container, "p", "Loading approved workers...");
 
     try {
         const snapshot = await db.collection("workers").get();
@@ -353,35 +376,30 @@ async function loadPublicWorkers() {
     } catch (error) {
         console.error("Loading public workers failed:", error);
 
-        publicWorkers.replaceChildren();
+        container.replaceChildren();
 
         addText(
-            publicWorkers,
+            container,
             "p",
-            "Could not load workers. Please refresh the page and try again."
+            "Could not load workers. Please refresh and try again."
         );
     }
 }
 
 
-/* Filter workers by job type AND location. */
+/* =====================================================
+   7. SEARCH BY JOB TYPE AND LOCATION
+===================================================== */
 
 function renderPublicWorkers() {
-    const publicWorkers = getElement("publicWorkers");
+    const container = getElement("publicWorkers");
 
-    if (!publicWorkers) {
-        return;
-    }
+    if (!container) return;
 
-    const jobInput = getElement("jobSearch");
-    const locationInput = getElement("locationSearch");
+    const jobQuery = normalize(getValue("jobSearch"));
+    const locationQuery = normalize(getValue("locationSearch"));
 
-    const jobQuery = normalize(jobInput ? jobInput.value : "");
-    const locationQuery = normalize(
-        locationInput ? locationInput.value : ""
-    );
-
-    const allJobsSelected = [
+    const allJobs = [
         "",
         "all",
         "all jobs",
@@ -389,70 +407,57 @@ function renderPublicWorkers() {
         "any job"
     ].includes(jobQuery);
 
-    const filteredWorkers = approvedWorkersCache.filter(
-        function (worker) {
-            const job = normalize(workerJob(worker));
+    const results = approvedWorkersCache.filter(function (worker) {
+        const job = normalize(workerJob(worker));
 
-            const locationParts = [
-                worker.city,
-                worker.subcity,
-                worker.region,
-                worker.location,
-                worker.address
-            ].map(normalize).filter(Boolean);
+        const locations = workerLocationParts(worker)
+            .map(normalize)
+            .filter(Boolean);
 
-            /*
-             * Match partial job names.
-             * Example: "clean" matches "Cleaner".
-             */
-            const matchesJob =
-                allJobsSelected ||
-                job.includes(jobQuery) ||
-                jobQuery.includes(job);
+        const matchesJob =
+            allJobs ||
+            job.includes(jobQuery) ||
+            jobQuery.includes(job);
 
-            /*
-             * Match any individual location field.
-             * Example: Addis Ababa can match the city,
-             * while Bole can match the subcity.
-             */
-            const matchesLocation =
-                !locationQuery ||
-                locationParts.some(function (part) {
-                    return part.includes(locationQuery);
-                });
+        const matchesLocation =
+            !locationQuery ||
+            locations.some(function (part) {
+                return part.includes(locationQuery);
+            });
 
-            return matchesJob && matchesLocation;
-        }
-    );
+        return matchesJob && matchesLocation;
+    });
 
-    publicWorkers.replaceChildren();
+    container.replaceChildren();
 
     if (approvedWorkersCache.length === 0) {
         addText(
-            publicWorkers,
+            container,
             "p",
-            "No approved workers available yet."
+            "No approved workers are available yet."
         );
         return;
     }
 
-    if (filteredWorkers.length === 0) {
+    if (results.length === 0) {
         addText(
-            publicWorkers,
+            container,
             "p",
-            "No workers match your search. Try another job type or location."
+            "No matching workers found. Try a different job type or location."
         );
         return;
     }
 
     addText(
-        publicWorkers,
+        container,
         "p",
-        filteredWorkers.length + " worker(s) found."
+        results.length + " worker(s) found."
     );
 
-    filteredWorkers.forEach(function (worker) {
+    results.forEach(function (worker) {
         const card = makeCard();
+
+        card.classList.add("worker-card");
 
         addText(card, "h3", worker.name || "Worker");
         addDetail(card, "Job", workerJob(worker));
@@ -460,85 +465,59 @@ function renderPublicWorkers() {
         addDetail(
             card,
             "Location",
-            [
-                worker.city,
-                worker.subcity,
-                worker.region
-            ].filter(Boolean).join(", ")
+            workerLocationParts(worker).join(", ")
         );
 
         addDetail(card, "Experience", worker.experience);
         addDetail(card, "Languages", worker.languages);
         addDetail(card, "Availability", worker.availability);
 
-        const contactButton = makeButton(
-            "Request Contact",
-            function () {
+        addText(card, "p", "Approved Worker");
+
+        card.appendChild(
+            makeButton("Request Contact", function () {
                 requestContact(worker.id, worker.name || "Worker");
-            }
+            })
         );
 
-        card.appendChild(contactButton);
-        publicWorkers.appendChild(card);
+        container.appendChild(card);
     });
 }
 
-
-/* Called by the Search button. */
-
 function searchWorkers(event) {
-    if (event) {
-        event.preventDefault();
-    }
-
+    if (event) event.preventDefault();
     renderPublicWorkers();
 }
 
 
 /* =====================================================
-   6. EMPLOYER - REQUEST WORKER CONTACT
+   8. EMPLOYER - OPEN CONTACT REQUEST FORM
 ===================================================== */
 
-async function requestContact(workerId, workerName) {
-    const requestPage = "request-contact.html";
+function requestContact(workerId, workerName) {
+    const url = new URL(
+        "request-contact.html",
+        window.location.href
+    );
 
-    const requestForm = getElement("requestContactForm");
+    url.searchParams.set("workerId", workerId);
+    url.searchParams.set("workerName", workerName);
 
-    /*
-     * If a separate contact-request form is not on this
-     * page, open the contact request page.
-     */
-    if (!requestForm) {
-        const url = new URL(requestPage, window.location.href);
-
-        url.searchParams.set("workerId", workerId);
-        url.searchParams.set("workerName", workerName);
-
-        window.location.href = url.href;
-        return;
-    }
-
-    const workerIdInput = getElement("workerId");
-    const workerNameInput = getElement("workerName");
-
-    if (workerIdInput) {
-        workerIdInput.value = workerId;
-    }
-
-    if (workerNameInput) {
-        workerNameInput.value = workerName;
-    }
+    window.location.href = url.href;
 }
 
+
+/* =====================================================
+   9. EMPLOYER - SUBMIT CONTACT REQUEST
+===================================================== */
+
 async function submitContactRequest(event) {
-    if (event) {
-        event.preventDefault();
-    }
+    if (event) event.preventDefault();
 
     if (!databaseAvailable()) {
         showMessage(
-            "requestMessage",
-            "Connection error. Please try again."
+            "requestStatusMessage",
+            "Database connection failed. Please try again."
         );
         return;
     }
@@ -555,18 +534,16 @@ async function submitContactRequest(event) {
 
     const workerId = getValue("workerId");
 
-    const selectedWorkerName =
+    const workerName =
         getValue("workerName") ||
         getValue("selectedWorkerName");
 
-    const message =
-        getValue("requestMessage") ||
-        getValue("message");
+    const message = getValue("message");
 
-    if (!employerName || !employerPhone || !selectedWorkerName) {
+    if (!employerName || !employerPhone || !workerName) {
         showMessage(
-            "requestMessage",
-            "Please enter your name, phone number, and the worker you want to contact."
+            "requestStatusMessage",
+            "Please enter your name, phone number, and selected worker."
         );
         return;
     }
@@ -576,54 +553,51 @@ async function submitContactRequest(event) {
             employerName: employerName,
             employerPhone: employerPhone,
             workerId: workerId,
-            workerName: selectedWorkerName,
+            workerName: workerName,
             message: message,
             status: "Pending",
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            createdAt:
+                firebase.firestore.FieldValue.serverTimestamp()
         });
 
         showMessage(
-            "requestMessage",
-            "Your request has been submitted. Please wait for admin approval."
+            "requestStatusMessage",
+            "Your request was submitted. Please wait for admin approval."
         );
 
         const form = getElement("requestContactForm");
 
-        if (form) {
-            form.reset();
-        }
+        if (form) form.reset();
     } catch (error) {
         console.error("Contact request failed:", error);
 
         showMessage(
-            "requestMessage",
-            "Could not send your request. Please try again."
+            "requestStatusMessage",
+            "Could not submit your request. Please try again."
         );
     }
 }
 
 
 /* =====================================================
-   7. ADMIN - LOAD CONTACT REQUESTS
+   10. ADMIN - LOAD CONTACT REQUESTS
 ===================================================== */
 
 async function loadContactRequests() {
-    const requestList = getElement("requestList");
+    const container = getElement("requestList");
 
-    if (!requestList || !databaseAvailable()) {
-        return;
-    }
+    if (!container || !databaseAvailable()) return;
 
-    requestList.replaceChildren();
-    addText(requestList, "p", "Loading contact requests...");
+    container.replaceChildren();
+    addText(container, "p", "Loading contact requests...");
 
     try {
         const snapshot = await db.collection("contactRequests").get();
 
-        requestList.replaceChildren();
+        container.replaceChildren();
 
         if (snapshot.empty) {
-            addText(requestList, "p", "No contact requests yet.");
+            addText(container, "p", "No contact requests yet.");
             return;
         }
 
@@ -632,79 +606,72 @@ async function loadContactRequests() {
             const card = makeCard();
 
             addText(card, "h3", "Contact Request");
+
             addDetail(card, "Employer", request.employerName);
             addDetail(card, "Employer Phone", request.employerPhone);
             addDetail(card, "Worker", request.workerName);
             addDetail(card, "Message", request.message);
             addDetail(card, "Status", request.status || "Pending");
 
-            const approveButton = makeButton(
-                "Approve Request",
-                function () {
+            card.appendChild(
+                makeButton("Approve Request", function () {
                     updateContactRequestStatus(doc.id, "Approved");
-                }
+                })
             );
 
-            const rejectButton = makeButton(
-                "Reject Request",
-                function () {
+            card.appendChild(
+                makeButton("Reject Request", function () {
                     updateContactRequestStatus(doc.id, "Rejected");
-                }
+                })
             );
 
-            card.appendChild(approveButton);
-            card.appendChild(rejectButton);
-            requestList.appendChild(card);
+            container.appendChild(card);
         });
     } catch (error) {
-        console.error("Loading contact requests failed:", error);
+        console.error("Loading requests failed:", error);
 
-        requestList.replaceChildren();
+        container.replaceChildren();
 
         addText(
-            requestList,
+            container,
             "p",
-            "Could not load contact requests. Check Firebase permissions."
+            "Could not load requests. Check Firebase permissions."
         );
     }
 }
 
 async function updateContactRequestStatus(requestId, status) {
-    if (!databaseAvailable()) {
-        return;
-    }
+    if (!databaseAvailable()) return;
 
     try {
         await db.collection("contactRequests")
             .doc(requestId)
             .update({ status: status });
 
-        alert("Contact request " + status.toLowerCase() + ".");
+        alert("Request status updated: " + status);
 
         await loadContactRequests();
     } catch (error) {
-        console.error("Updating contact request failed:", error);
+        console.error("Updating request failed:", error);
 
         alert(
-            "Could not update the request. Check your Firebase permissions."
+            "Could not update the request. Check Firebase permissions."
         );
     }
 }
 
 
 /* =====================================================
-   8. EMPLOYER - CHECK REQUEST STATUS
+   11. EMPLOYER - CHECK REQUEST STATUS
 ===================================================== */
 
 async function checkStatus(event) {
-    if (event) {
-        event.preventDefault();
-    }
+    if (event) event.preventDefault();
 
     if (!databaseAvailable()) {
         showMessage(
             "statusResults",
-            "Connection error. Please try again."
+            "Database connection failed. Please try again."
         );
         return;
     }
@@ -714,25 +681,24 @@ async function checkStatus(event) {
         getValue("statusPhone") ||
         getValue("phoneSearch");
 
-    const statusResults = getElement("statusResults");
+    const container = getElement("statusResults");
 
     if (!phone) {
         showMessage(
             "statusResults",
-            "Please enter the phone number used for your request."
+            "Enter the phone number used for your request."
         );
         return;
     }
 
-    if (statusResults) {
-        statusResults.replaceChildren();
-        addText(statusResults, "p", "Checking your requests...");
+    if (container) {
+        container.replaceChildren();
+        addText(container, "p", "Checking requests...");
     }
 
     try {
         const snapshot = await db.collection("contactRequests").get();
-
-        const matchingRequests = [];
+        const matches = [];
 
         snapshot.forEach(function (doc) {
             const request = doc.data();
@@ -740,15 +706,16 @@ async function checkStatus(event) {
             if (
                 normalize(request.employerPhone) === normalize(phone)
             ) {
-                matchingRequests.push(request);
+                matches.push({
+                    ...request,
+                    id: doc.id
+                });
             }
         });
 
-        if (statusResults) {
-            statusResults.replaceChildren();
-        }
+        if (container) container.replaceChildren();
 
-        if (matchingRequests.length === 0) {
+        if (matches.length === 0) {
             showMessage(
                 "statusResults",
                 "No requests found for this phone number."
@@ -756,13 +723,34 @@ async function checkStatus(event) {
             return;
         }
 
-        matchingRequests.forEach(async function (request) {
+        for (const request of matches) {
             const card = makeCard();
 
             addDetail(card, "Worker", request.workerName);
-            addDetail(card, "Request Status", request.status || "Pending");
+            addDetail(
+                card,
+                "Status",
+                request.status || "Pending"
+            );
 
-            if (normalize(request.status) === "approved") {
+            if (normalize(request.status) === "pending") {
+                addText(
+                    card,
+                    "p",
+                    "Your request is waiting for admin approval."
+                );
+            } else if (normalize(request.status) === "rejected") {
+                addText(
+                    card,
+                    "p",
+                    "Your request was not approved."
+                );
+            } else if (normalize(request.status) === "approved") {
+                /*
+                 * Display the phone only after approval.
+                 * Firestore rules must also enforce this
+                 * restriction on the database.
+                 */
                 try {
                     let worker = null;
 
@@ -778,59 +766,49 @@ async function checkStatus(event) {
                     }
 
                     if (worker && worker.phone) {
-                        addDetail(card, "Worker Phone", worker.phone);
+                        addDetail(
+                            card,
+                            "Worker Phone",
+                            worker.phone
+                        );
                     } else {
                         addText(
                             card,
                             "p",
-                            "Your request is approved, but the worker's phone number could not be found."
+                            "The request is approved, but contact details are unavailable."
                         );
                     }
                 } catch (error) {
-                    console.error("Loading worker contact failed:", error);
+                    console.error("Loading contact details failed:", error);
 
                     addText(
                         card,
                         "p",
-                        "Your request is approved, but the contact details could not be loaded."
+                        "The request is approved, but contact details could not be loaded."
                     );
                 }
-            } else if (normalize(request.status) === "pending") {
-                addText(
-                    card,
-                    "p",
-                    "Your request is waiting for admin approval."
-                );
-            } else if (normalize(request.status) === "rejected") {
-                addText(
-                    card,
-                    "p",
-                    "Your request was not approved."
-                );
             }
 
-            if (statusResults) {
-                statusResults.appendChild(card);
-            }
-        });
+            if (container) container.appendChild(card);
+        }
     } catch (error) {
-        console.error("Checking request status failed:", error);
+        console.error("Checking status failed:", error);
 
         showMessage(
             "statusResults",
-            "Could not check your request. Please try again."
+            "Could not check your requests. Please try again."
         );
     }
 }
 
 
 /* =====================================================
-   9. CONNECT HTML FORMS AND BUTTONS
+   12. INITIALIZE THE WEBSITE
 ===================================================== */
 
 function initializeBesnosJobs() {
     /*
-     * Worker registration
+     * Connect forms.
      */
     const workerForm = getElement("workerForm");
 
@@ -838,9 +816,6 @@ function initializeBesnosJobs() {
         workerForm.addEventListener("submit", registerWorker);
     }
 
-    /*
-     * Worker search
-     */
     const searchForm = getElement("workerSearchForm");
 
     if (searchForm) {
@@ -856,30 +831,33 @@ function initializeBesnosJobs() {
     const jobSearch = getElement("jobSearch");
     const locationSearch = getElement("locationSearch");
 
-    /*
-     * Update results while typing.
-     */
     if (jobSearch) {
         jobSearch.addEventListener("input", renderPublicWorkers);
-        jobSearch.addEventListener("change", renderPublicWorkers);
     }
 
     if (locationSearch) {
         locationSearch.addEventListener("input", renderPublicWorkers);
     }
 
-    /*
-     * Contact request form
-     */
-    const requestForm = getElement("requestContactForm");
+    const contactForm = getElement("requestContactForm");
 
-    if (requestForm) {
-        requestForm.addEventListener("submit", submitContactRequest);
+    if (contactForm) {
+        contactForm.addEventListener(
+            "submit",
+            submitContactRequest
+        );
+
+        const params = new URLSearchParams(window.location.search);
+
+        if (getElement("workerId") && params.has("workerId")) {
+            getElement("workerId").value = params.get("workerId");
+        }
+
+        if (getElement("workerName") && params.has("workerName")) {
+            getElement("workerName").value = params.get("workerName");
+        }
     }
 
-    /*
-     * Check request status form
-     */
     const statusForm = getElement("statusForm");
 
     if (statusForm) {
@@ -887,40 +865,50 @@ function initializeBesnosJobs() {
     }
 
     /*
-     * Support existing inline HTML button handlers.
+     * Public worker listings do not require admin sign-in.
      */
-    if (getElement("workerList")) {
-        loadWorkers();
-    }
-
     if (getElement("publicWorkers")) {
         loadPublicWorkers();
     }
 
-    if (getElement("requestList")) {
-        loadContactRequests();
-    }
-
     /*
-     * Fill the selected worker from the contact page URL.
+     * Protect the dashboard from displaying data to
+     * visitors who are not signed in.
      */
-    const params = new URLSearchParams(window.location.search);
+    const isAdminPage =
+        getElement("workerList") ||
+        getElement("requestList");
 
-    const workerIdInput = getElement("workerId");
-    const workerNameInput = getElement("workerName");
+    if (isAdminPage) {
+        if (
+            typeof firebase === "undefined" ||
+            typeof firebase.auth !== "function"
+        ) {
+            alert("Firebase Authentication is unavailable.");
+            window.location.href = "admin-login.html";
+            return;
+        }
 
-    if (workerIdInput && params.has("workerId")) {
-        workerIdInput.value = params.get("workerId");
-    }
+        firebase.auth().onAuthStateChanged(function (user) {
+            if (!user) {
+                window.location.replace("admin-login.html");
+                return;
+            }
 
-    if (workerNameInput && params.has("workerName")) {
-        workerNameInput.value = params.get("workerName");
+            if (getElement("workerList")) {
+                loadWorkers();
+            }
+
+            if (getElement("requestList")) {
+                loadContactRequests();
+            }
+        });
     }
 }
 
 
 /* =====================================================
-   10. START THE WEBSITE SCRIPT
+   13. START
 ===================================================== */
 
 if (document.readyState === "loading") {
