@@ -1,7 +1,6 @@
 // Firebase configuration
-
 const firebaseConfig = {
-    apiKey: "AIzaSyCJYVzDPbymADYc5CBVITL7cbo-e1eEK9c",
+    apiKey: "YOUR_EXISTING_API_KEY",
     authDomain: "besnos-jobs.firebaseapp.com",
     databaseURL: "https://besnos-jobs-default-rtdb.firebaseio.com",
     projectId: "besnos-jobs",
@@ -11,12 +10,5 @@ const firebaseConfig = {
     measurementId: "G-1QWVS83ZK5"
 };
 
-
-// Initialize Firebase
-
 firebase.initializeApp(firebaseConfig);
-
-
-// Connect to Firestore
-
 const db = firebase.firestore();
