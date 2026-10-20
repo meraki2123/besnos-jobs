@@ -1,34 +1,131 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login - Besnos Jobs</title>
+
     <link rel="stylesheet" href="style.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef5fc;
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 420px;
+            background: white;
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 8px 30px rgba(0, 45, 90, 0.12);
+        }
+
+        h1 {
+            color: #1769aa;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin: 16px 0 7px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px;
+            border: 1px solid #bdccdc;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 22px;
+            padding: 13px;
+            background: #1769aa;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #104c80;
+        }
+
+        #loginMessage {
+            overflow-wrap: anywhere;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 18px;
+            color: #1769aa;
+        }
+    </style>
 </head>
 
 <body>
+    <main class="login-card">
+        <h1>Besnos Jobs Admin</h1>
+        <p>Sign in with your administrator email and password.</p>
 
-<section class="hero">
+        <form id="adminLoginForm">
+            <label for="username">Admin Email</label>
+            <input
+                type="email"
+                id="username"
+                name="email"
+                autocomplete="username"
+                required
+            >
 
-<h1>Besnos Jobs Admin Login</h1>
+            <label for="password">Password</label>
+            <input
+                type="password"
+                id="password"
+                name="password"
+                autocomplete="current-password"
+                required
+            >
 
-<form>
+            <button type="submit" id="loginButton">Sign In</button>
 
-<input type="text" id="username" placeholder="Username">
-<br><br>
+            <p id="loginMessage" role="status" aria-live="polite"></p>
+        </form>
 
-<input type="password" id="password" placeholder="Password">
-<br><br>
+        <a class="back-link" href="index.html">Back to Home</a>
+    </main>
 
-<button type="button" onclick="adminLogin()">
-    Login
-</button>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
-</form>
+    <script src="firebase.js"></script>
+    <script src="script.js"></script>
 
-</section>
-
-
-<script src="script.js"></script>
-
+    <script>
+        document.getElementById("adminLoginForm").addEventListener(
+            "submit",
+            function (event) {
+                if (typeof adminLogin === "function") {
+                    adminLogin(event);
+                }
+            }
+        );
+    </script>
 </body>
 </html>
