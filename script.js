@@ -1,934 +1,832 @@
+
 // ==========================================
 // BESNOS JOBS - SCRIPT.JS
+// Worker registration, worker search, admin
+// dashboard, contact requests, and status checks.
+// Firebase v8 / compat version
 // ==========================================
 
+"use strict";
+
+// ==========================================
+// SHARED HELPERS
+// ==========================================
+
+function getElement(id) {
+    return document.getElementById(id);
+}
+
+function showMessage(container, message, heading = "p") {
+    if (!container) return;
+
+    container.replaceChildren();
+
+    const element = document.createElement(heading);
+    element.textContent = message;
+    container.appendChild(element);
+}
+
+function addText(parent, tag, text) {
+    const element = document.createElement(tag);
+    element.textContent = text == null ? "" : String(text);
+    parent.appendChild(element);
+    return element;
+}
+
+function addField(card, label, value) {
+    const p = document.createElement("p");
+    const strong = document.createElement("strong");
+
+    strong.textContent = label + ": ";
+    p.appendChild(strong);
+
+    p.appendChild(
+        document.createTextNode(
+            value == null || value === "" ? "—" : String(value)
+        )
+    );
+
+    card.appendChild(p);
+}
+
+function makeButton(label, onClick) {
+    const button = document.createElement("button");
+
+    button.type = "button";
+    button.textContent = label;
+    button.addEventListener("click", onClick);
+
+    return button;
+}
+
+function makeCard(title) {
+    const card = document.createElement("div");
+    card.className = "card";
+
+    addText(card, "h3", title || "Unnamed");
+
+    return card;
+}
+
+function databaseAvailable() {
+    if (typeof db === "undefined" || !db) {
+        console.error(
+            "Firebase database is unavailable. Check firebase.js."
+        );
+
+        return false;
+    }
+
+    return true;
+}
 
 // ==========================================
 // WORKER REGISTRATION
 // ==========================================
 
-const workerForm = document.getElementById("workerForm");
+const workerForm = getElement("workerForm");
 
 if (workerForm) {
-
-    workerForm.addEventListener("submit", async function(event) {
-
+    workerForm.addEventListener("submit", async function (event) {
         event.preventDefault();
 
+        if (!databaseAvailable()) {
+            alert("The service is unavailable. Please try again later.");
+            return;
+        }
+
+        function value(id) {
+            const element = getElement(id);
+            return element ? element.value.trim() : "";
+        }
+
         const worker = {
-
-            name: document.getElementById("name").value.trim(),
-
-            age: document.getElementById("age").value,
-
-            gender: document.getElementById("gender").value,
-
-            phone: document.getElementById("phone").value.trim(),
-
-            region: document.getElementById("region").value.trim(),
-
-            city: document.getElementById("city").value.trim(),
-
-            subcity: document.getElementById("subcity").value.trim(),
-
-            job: document.getElementById("job").value,
-
-            experience:
-                document.getElementById("experience").value,
-
-            languages:
-                document.getElementById("languages").value.trim(),
-
-            salary:
-                document.getElementById("salary").value,
-
-            availability:
-                document.getElementById("availability").value,
-
+            name: value("name"),
+            age: Number(value("age")) || 0,
+            gender: value("gender"),
+            phone: value("phone"),
+            region: value("region"),
+            city: value("city"),
+            subcity: value("subcity"),
+            job: value("job"),
+            experience: Number(value("experience")) || 0,
+            languages: value("languages"),
+            salary: Number(value("salary")) || 0,
+            availability: value("availability"),
             status: "Pending",
-
             createdAt: new Date()
-
         };
 
+        if (!worker.name || !worker.phone || !worker.job) {
+            alert("Please enter your name, phone number, and job type.");
+            return;
+        }
+
+        const submitButton =
+            workerForm.querySelector('[type="submit"]');
+
+        if (submitButton) {
+            submitButton.disabled = true;
+        }
 
         try {
-
-            await db
-                .collection("workers")
-                .add(worker);
-
+            await db.collection("workers").add(worker);
 
             alert(
-                "Worker registration submitted!"
+                "Worker registration submitted! It will be reviewed before appearing publicly."
             );
-
 
             workerForm.reset();
 
-        }
-
-        catch (error) {
-
-            console.error(
-                "Worker registration error:",
-                error
-            );
-
+        } catch (error) {
+            console.error("Worker registration error:", error);
 
             alert(
-                "Registration failed. Please try again."
+                "Registration failed. Please check your connection and try again."
             );
 
+        } finally {
+            if (submitButton) {
+                submitButton.disabled = false;
+            }
         }
-
     });
-
 }
-
 
 // ==========================================
 // ADMIN LOGIN
+// IMPORTANT: This is the existing basic login.
+// It is NOT secure for a public website.
 // ==========================================
 
 function adminLogin() {
+    const usernameElement = getElement("username");
+    const passwordElement = getElement("password");
 
-    const username =
-        document.getElementById("username").value.trim();
+    if (!usernameElement || !passwordElement) {
+        alert("Login form could not be found.");
+        return;
+    }
 
-    const password =
-        document.getElementById("password").value;
+    const username = usernameElement.value.trim();
+    const password = passwordElement.value;
 
-
-    if (
-        username === "admin" &&
-        password === "12345"
-    ) {
-
+    // Preserved for compatibility with your current website.
+    if (username === "admin" && password === "12345") {
         window.location.href = "admin.html";
-
+    } else {
+        alert("Wrong username or password.");
     }
-
-    else {
-
-        alert(
-            "Wrong username or password"
-        );
-
-    }
-
 }
-
 
 // ==========================================
 // LOAD WORKERS FOR ADMIN
 // ==========================================
 
 async function loadWorkers() {
+    const workerList = getElement("workerList");
 
-    const workerList =
-        document.getElementById("workerList");
+    if (!workerList) return;
 
-
-    if (!workerList) {
+    if (!databaseAvailable()) {
+        showMessage(workerList, "Unable to connect to the database.");
         return;
     }
 
+    showMessage(workerList, "Loading worker registrations...");
 
     try {
+        const snapshot = await db.collection("workers").get();
 
-        const snapshot =
-            await db
-                .collection("workers")
-                .get();
-
-
-        workerList.innerHTML = "";
-
+        workerList.replaceChildren();
 
         if (snapshot.empty) {
-
-            workerList.innerHTML =
-                "<h3>No worker registrations yet.</h3>";
+            showMessage(
+                workerList,
+                "No worker registrations yet.",
+                "h3"
+            );
 
             return;
-
         }
 
+        snapshot.forEach(function (doc) {
+            const worker = doc.data() || {};
 
-        snapshot.forEach(function(doc) {
+            const card = makeCard(
+                worker.name || "Unnamed worker"
+            );
 
-            const worker = doc.data();
+            addField(card, "Age", worker.age);
+            addField(card, "Gender", worker.gender);
+            addField(card, "Phone", worker.phone);
+            addField(card, "Region", worker.region);
+            addField(card, "City", worker.city);
+            addField(card, "Sub-city", worker.subcity);
+            addField(card, "Job", worker.job);
 
+            addField(
+                card,
+                "Experience",
+                (worker.experience || 0) + " years"
+            );
 
-            workerList.innerHTML += `
+            addField(card, "Languages", worker.languages);
 
-                <div class="card">
+            addField(
+                card,
+                "Expected Salary",
+                (worker.salary || 0) + " ETB"
+            );
 
-                    <h3>${worker.name || ""}</h3>
+            addField(card, "Availability", worker.availability);
 
-                    <p>
-                        <strong>Age:</strong>
-                        ${worker.age || ""}
-                    </p>
+            addField(
+                card,
+                "Status",
+                worker.status || "Pending"
+            );
 
-                    <p>
-                        <strong>Gender:</strong>
-                        ${worker.gender || ""}
-                    </p>
+            card.appendChild(
+                makeButton("Approve", function () {
+                    approveWorker(
+                        doc.id,
+                        worker.name || "Worker"
+                    );
+                })
+            );
 
-                    <p>
-                        <strong>Phone:</strong>
-                        ${worker.phone || ""}
-                    </p>
+            card.appendChild(
+                document.createTextNode(" ")
+            );
 
-                    <p>
-                        <strong>Region:</strong>
-                        ${worker.region || ""}
-                    </p>
+            card.appendChild(
+                makeButton("Reject", function () {
+                    rejectWorker(
+                        doc.id,
+                        worker.name || "Worker"
+                    );
+                })
+            );
 
-                    <p>
-                        <strong>City:</strong>
-                        ${worker.city || ""}
-                    </p>
-
-                    <p>
-                        <strong>Sub-city:</strong>
-                        ${worker.subcity || ""}
-                    </p>
-
-                    <p>
-                        <strong>Job:</strong>
-                        ${worker.job || ""}
-                    </p>
-
-                    <p>
-                        <strong>Experience:</strong>
-                        ${worker.experience || 0} years
-                    </p>
-
-                    <p>
-                        <strong>Languages:</strong>
-                        ${worker.languages || ""}
-                    </p>
-
-                    <p>
-                        <strong>Expected Salary:</strong>
-                        ${worker.salary || 0} ETB
-                    </p>
-
-                    <p>
-                        <strong>Availability:</strong>
-                        ${worker.availability || ""}
-                    </p>
-
-                    <p>
-                        <strong>Status:</strong>
-                        ${worker.status || "Pending"}
-                    </p>
-
-
-                    <button
-                        onclick="approveWorker(
-                            '${doc.id}',
-                            '${worker.name || ""}'
-                        )"
-                    >
-                        Approve
-                    </button>
-
-
-                    <button
-                        onclick="rejectWorker(
-                            '${doc.id}',
-                            '${worker.name || ""}'
-                        )"
-                    >
-                        Reject
-                    </button>
-
-                </div>
-
-            `;
-
+            workerList.appendChild(card);
         });
 
+    } catch (error) {
+        console.error("Loading workers failed:", error);
+
+        showMessage(
+            workerList,
+            "Unable to load workers. Please try again.",
+            "h3"
+        );
     }
-
-    catch (error) {
-
-        console.error(error);
-
-        workerList.innerHTML =
-            "<h3>Unable to load workers.</h3>";
-
-    }
-
 }
 
-
 // ==========================================
-// APPROVE WORKER
+// APPROVE OR REJECT WORKERS
 // ==========================================
 
-async function approveWorker(id, name) {
+async function updateWorkerStatus(id, name, status) {
+    if (!databaseAvailable()) {
+        alert("The service is temporarily unavailable.");
+        return;
+    }
 
     try {
-
-        await db
-            .collection("workers")
+        await db.collection("workers")
             .doc(id)
-            .update({
-                status: "Approved"
-            });
-
+            .update({ status: status });
 
         alert(
-            name + " has been approved!"
+            name + " has been " + status.toLowerCase() + "."
         );
 
+        await loadWorkers();
+        await loadPublicWorkers();
 
-        loadWorkers();
-
-    }
-
-    catch (error) {
-
-        console.error(error);
+    } catch (error) {
+        console.error("Worker status update failed:", error);
 
         alert(
-            "Could not approve worker."
+            "Could not update this worker. Please try again."
         );
-
     }
-
 }
 
-
-// ==========================================
-// REJECT WORKER
-// ==========================================
-
-async function rejectWorker(id, name) {
-
-    try {
-
-        await db
-            .collection("workers")
-            .doc(id)
-            .update({
-                status: "Rejected"
-            });
-
-
-        alert(
-            name + " has been rejected!"
-        );
-
-
-        loadWorkers();
-
-    }
-
-    catch (error) {
-
-        console.error(error);
-
-        alert(
-            "Could not reject worker."
-        );
-
-    }
-
+function approveWorker(id, name) {
+    return updateWorkerStatus(id, name, "Approved");
 }
 
+function rejectWorker(id, name) {
+    return updateWorkerStatus(id, name, "Rejected");
+}
 
 // ==========================================
 // LOAD APPROVED WORKERS
 // ==========================================
 
+let approvedWorkersCache = [];
+
 async function loadPublicWorkers() {
+    const publicWorkers = getElement("publicWorkers");
 
-    const publicWorkers =
-        document.getElementById("publicWorkers");
+    if (!publicWorkers) return;
 
+    if (!databaseAvailable()) {
+        showMessage(
+            publicWorkers,
+            "Unable to connect to the database."
+        );
 
-    if (!publicWorkers) {
         return;
     }
 
+    showMessage(publicWorkers, "Loading available workers...");
 
     try {
+        const snapshot = await db.collection("workers")
+            .where("status", "==", "Approved")
+            .get();
 
-        const snapshot =
-            await db
-                .collection("workers")
-                .where(
-                    "status",
-                    "==",
-                    "Approved"
-                )
-                .get();
-
-
-        publicWorkers.innerHTML = "";
-
-
-        if (snapshot.empty) {
-
-            publicWorkers.innerHTML =
-                "<h3>No approved workers available.</h3>";
-
-            return;
-
-        }
-
-
-        snapshot.forEach(function(doc) {
-
-            const worker = doc.data();
-
-
-            publicWorkers.innerHTML += `
-
-                <div class="card">
-
-                    <h3>${worker.name || ""}</h3>
-
-                    <p>
-                        <strong>Job:</strong>
-                        ${worker.job || ""}
-                    </p>
-
-                    <p>
-                        <strong>Location:</strong>
-                        ${worker.city || ""},
-                        ${worker.region || ""}
-                    </p>
-
-                    <p>
-                        <strong>Experience:</strong>
-                        ${worker.experience || 0} years
-                    </p>
-
-                    <p>
-                        <strong>Languages:</strong>
-                        ${worker.languages || ""}
-                    </p>
-
-                    <p>
-                        <strong>Availability:</strong>
-                        ${worker.availability || ""}
-                    </p>
-
-                    <p>
-                        ✅ Verified Worker
-                    </p>
-
-
-                    <button
-                        onclick="requestContact(
-                            '${doc.id}',
-                            '${worker.name || ""}'
-                        )"
-                    >
-                        Request Contact
-                    </button>
-
-                </div>
-
-            `;
-
+        approvedWorkersCache = snapshot.docs.map(function (doc) {
+            return {
+                id: doc.id,
+                ...doc.data()
+            };
         });
 
+        renderPublicWorkers();
+
+    } catch (error) {
+        console.error("Loading public workers failed:", error);
+
+        showMessage(
+            publicWorkers,
+            "Unable to load workers. Please try again.",
+            "h3"
+        );
     }
-
-    catch (error) {
-
-        console.error(error);
-
-        publicWorkers.innerHTML =
-            "<h3>Unable to load workers.</h3>";
-
-    }
-
 }
 
-
 // ==========================================
-// REQUEST CONTACT
+// DISPLAY AND FILTER PUBLIC WORKERS
 // ==========================================
 
-async function requestContact(
-    workerId,
-    workerName
-) {
+function renderPublicWorkers() {
+    const publicWorkers = getElement("publicWorkers");
 
-    const employerName =
-        prompt(
-            "Enter your full name:"
+    if (!publicWorkers) return;
+
+    const locationInput = getElement("locationSearch");
+    const jobInput = getElement("jobSearch");
+
+    const locationQuery = locationInput
+        ? locationInput.value.trim().toLowerCase()
+        : "";
+
+    const selectedJob = jobInput
+        ? jobInput.value.trim().toLowerCase()
+        : "";
+
+    const filteredWorkers = approvedWorkersCache.filter(
+        function (worker) {
+            const workerJob = String(
+                worker.job || ""
+            ).trim().toLowerCase();
+
+            const workerLocation = [
+                worker.city,
+                worker.region,
+                worker.subcity
+            ]
+                .filter(Boolean)
+                .join(" ")
+                .toLowerCase();
+
+            const matchesJob =
+                !selectedJob ||
+                selectedJob === "all jobs" ||
+                selectedJob === "all" ||
+                workerJob === selectedJob;
+
+            const matchesLocation =
+                !locationQuery ||
+                workerLocation.includes(locationQuery);
+
+            return matchesJob && matchesLocation;
+        }
+    );
+
+    publicWorkers.replaceChildren();
+
+    if (approvedWorkersCache.length === 0) {
+        showMessage(
+            publicWorkers,
+            "No approved workers available yet.",
+            "h3"
         );
 
-
-    if (!employerName) {
         return;
     }
 
+    if (filteredWorkers.length === 0) {
+        const language =
+            localStorage.getItem("besnosLanguage") || "en";
 
-    const employerPhone =
-        prompt(
-            "Enter your phone number:"
+        showMessage(
+            publicWorkers,
+            language === "am"
+                ? "የፍለጋዎን መስፈርት የሚያሟሉ ሰራተኞች አልተገኙም።"
+                : "No workers match your search.",
+            "h3"
         );
 
-
-    if (!employerPhone) {
         return;
     }
 
+    filteredWorkers.forEach(function (worker) {
+        const card = makeCard(worker.name || "Worker");
+
+        addField(card, "Job", worker.job);
+
+        addField(
+            card,
+            "Location",
+            [worker.city, worker.region]
+                .filter(Boolean)
+                .join(", ")
+        );
+
+        addField(
+            card,
+            "Experience",
+            (worker.experience || 0) + " years"
+        );
+
+        addField(card, "Languages", worker.languages);
+        addField(card, "Availability", worker.availability);
+
+        addText(card, "p", "✓ Verified Worker");
+
+        card.appendChild(
+            makeButton("Request Contact", function () {
+                requestContact(
+                    worker.id,
+                    worker.name || "Worker"
+                );
+            })
+        );
+
+        publicWorkers.appendChild(card);
+    });
+}
+
+// Search function used by the search form/button.
+function searchWorkers() {
+    renderPublicWorkers();
+}
+
+// Connect the search form if it exists.
+const workerSearchForm = getElement("workerSearchForm");
+
+if (workerSearchForm) {
+    workerSearchForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        searchWorkers();
+    });
+}
+
+// Support an optional button with this ID.
+const searchButton = getElement("searchWorkersButton");
+
+if (searchButton && !workerSearchForm) {
+    searchButton.addEventListener("click", searchWorkers);
+}
+
+// ==========================================
+// EMPLOYER: REQUEST WORKER CONTACT
+// ==========================================
+
+async function requestContact(workerId, workerName) {
+    if (!databaseAvailable()) {
+        alert("The service is temporarily unavailable.");
+        return;
+    }
+
+    const employerName = prompt("Enter your full name:");
+
+    if (
+        employerName === null ||
+        !employerName.trim()
+    ) {
+        return;
+    }
+
+    const employerPhone = prompt("Enter your phone number:");
+
+    if (
+        employerPhone === null ||
+        !employerPhone.trim()
+    ) {
+        return;
+    }
 
     try {
-
-        await db
-            .collection("contactRequests")
-            .add({
-
-                employerName:
-                    employerName.trim(),
-
-                employerPhone:
-                    employerPhone.trim(),
-
-                workerId:
-                    workerId,
-
-                workerName:
-                    workerName,
-
-                status:
-                    "Pending",
-
-                createdAt:
-                    new Date()
-
-            });
-
+        await db.collection("contactRequests").add({
+            employerName: employerName.trim(),
+            employerPhone: employerPhone.trim(),
+            workerId: workerId,
+            workerName: workerName,
+            status: "Pending",
+            createdAt: new Date()
+        });
 
         alert(
             "Your request to contact " +
             workerName +
-            " has been submitted!"
+            " has been submitted. You can check its status later."
         );
 
-    }
-
-    catch (error) {
-
-        console.error(
-            "Contact request error:",
-            error
-        );
-
+    } catch (error) {
+        console.error("Contact request error:", error);
 
         alert(
-            "Request could not be saved."
+            "Your request could not be saved. Please try again."
         );
-
     }
-
 }
 
-
 // ==========================================
-// LOAD CONTACT REQUESTS
+// ADMIN: LOAD CONTACT REQUESTS
 // ==========================================
 
 async function loadContactRequests() {
+    const requestList = getElement("requestList");
 
-    const requestList =
-        document.getElementById("requestList");
+    if (!requestList) return;
 
+    if (!databaseAvailable()) {
+        showMessage(
+            requestList,
+            "Unable to connect to the database."
+        );
 
-    if (!requestList) {
         return;
     }
 
+    showMessage(requestList, "Loading contact requests...");
 
     try {
-
         const snapshot =
-            await db
-                .collection("contactRequests")
-                .get();
+            await db.collection("contactRequests").get();
 
-
-        requestList.innerHTML = "";
-
+        requestList.replaceChildren();
 
         if (snapshot.empty) {
-
-            requestList.innerHTML =
-                "<h3>No contact requests yet.</h3>";
+            showMessage(
+                requestList,
+                "No contact requests yet.",
+                "h3"
+            );
 
             return;
-
         }
 
+        snapshot.forEach(function (doc) {
+            const request = doc.data() || {};
 
-        snapshot.forEach(function(doc) {
+            const card = makeCard("Contact Request");
 
-            const request = doc.data();
+            addField(card, "Employer", request.employerName);
+            addField(card, "Employer Phone", request.employerPhone);
+            addField(card, "Worker", request.workerName);
 
+            addField(
+                card,
+                "Status",
+                request.status || "Pending"
+            );
 
-            requestList.innerHTML += `
+            card.appendChild(
+                makeButton("Approve Request", function () {
+                    approveRequest(doc.id);
+                })
+            );
 
-                <div class="card">
+            card.appendChild(
+                document.createTextNode(" ")
+            );
 
-                    <h3>Contact Request</h3>
+            card.appendChild(
+                makeButton("Reject Request", function () {
+                    rejectRequest(doc.id);
+                })
+            );
 
-                    <p>
-                        <strong>Employer:</strong>
-                        ${request.employerName || ""}
-                    </p>
-
-                    <p>
-                        <strong>Employer Phone:</strong>
-                        ${request.employerPhone || ""}
-                    </p>
-
-                    <p>
-                        <strong>Worker:</strong>
-                        ${request.workerName || ""}
-                    </p>
-
-                    <p>
-                        <strong>Status:</strong>
-                        ${request.status || "Pending"}
-                    </p>
-
-
-                    <button
-                        onclick="approveRequest(
-                            '${doc.id}'
-                        )"
-                    >
-                        Approve Request
-                    </button>
-
-
-                    <button
-                        onclick="rejectRequest(
-                            '${doc.id}'
-                        )"
-                    >
-                        Reject Request
-                    </button>
-
-                </div>
-
-            `;
-
+            requestList.appendChild(card);
         });
 
+    } catch (error) {
+        console.error("Loading contact requests failed:", error);
+
+        showMessage(
+            requestList,
+            "Unable to load contact requests. Please try again.",
+            "h3"
+        );
     }
-
-    catch (error) {
-
-        console.error(error);
-
-        requestList.innerHTML =
-            "<h3>Unable to load contact requests.</h3>";
-
-    }
-
 }
 
-
 // ==========================================
-// APPROVE CONTACT REQUEST
+// APPROVE OR REJECT CONTACT REQUESTS
 // ==========================================
 
-async function approveRequest(id) {
+async function updateRequestStatus(id, status) {
+    if (!databaseAvailable()) {
+        alert("The service is temporarily unavailable.");
+        return;
+    }
 
     try {
-
-        await db
-            .collection("contactRequests")
+        await db.collection("contactRequests")
             .doc(id)
-            .update({
-                status: "Approved"
-            });
-
+            .update({ status: status });
 
         alert(
-            "Contact request approved!"
+            "Contact request " + status.toLowerCase() + "."
         );
 
+        await loadContactRequests();
 
-        loadContactRequests();
-
-    }
-
-    catch (error) {
-
-        console.error(error);
+    } catch (error) {
+        console.error("Contact request update failed:", error);
 
         alert(
-            "Could not approve request."
+            "Could not update this contact request. Please try again."
         );
-
     }
-
 }
 
-
-// ==========================================
-// REJECT CONTACT REQUEST
-// ==========================================
-
-async function rejectRequest(id) {
-
-    try {
-
-        await db
-            .collection("contactRequests")
-            .doc(id)
-            .update({
-                status: "Rejected"
-            });
-
-
-        alert(
-            "Contact request rejected!"
-        );
-
-
-        loadContactRequests();
-
-    }
-
-    catch (error) {
-
-        console.error(error);
-
-        alert(
-            "Could not reject request."
-        );
-
-    }
-
+function approveRequest(id) {
+    return updateRequestStatus(id, "Approved");
 }
 
+function rejectRequest(id) {
+    return updateRequestStatus(id, "Rejected");
+}
 
 // ==========================================
-// CHECK REQUEST STATUS
+// EMPLOYER: CHECK REQUEST STATUS
 // ==========================================
 
 async function checkStatus() {
+    const phoneInput = getElement("statusPhoneSearch");
+    const results = getElement("statusResults");
 
-    const phoneInput =
-        document.getElementById(
-            "statusPhoneSearch"
-        );
+    if (!phoneInput || !results) return;
 
-
-    const results =
-        document.getElementById(
-            "statusResults"
-        );
-
-
-    if (!phoneInput || !results) {
-        return;
-    }
-
-
-    const phone =
-        phoneInput.value.trim();
-
+    const phone = phoneInput.value.trim();
 
     if (!phone) {
-
-        results.innerHTML =
-            "<h3>Please enter your phone number.</h3>";
+        showMessage(
+            results,
+            "Please enter your phone number.",
+            "h3"
+        );
 
         return;
-
     }
 
+    if (!databaseAvailable()) {
+        showMessage(
+            results,
+            "The service is temporarily unavailable.",
+            "h3"
+        );
 
-    results.innerHTML =
-        "<h3>Checking...</h3>";
+        return;
+    }
 
+    showMessage(results, "Checking request status...", "h3");
 
     try {
+        const snapshot = await db.collection("contactRequests")
+            .where("employerPhone", "==", phone)
+            .get();
 
-        const snapshot =
-            await db
-                .collection("contactRequests")
-                .where(
-                    "employerPhone",
-                    "==",
-                    phone
-                )
-                .get();
-
-
-        results.innerHTML = "";
-
+        results.replaceChildren();
 
         if (snapshot.empty) {
-
-            results.innerHTML = `
-
-                <h3>No request found.</h3>
-
-                <p>
-                    Please check your phone number
-                    and try again.
-                </p>
-
-            `;
+            showMessage(
+                results,
+                "No request found. Please check the phone number and try again.",
+                "h3"
+            );
 
             return;
-
         }
 
+        for (const doc of snapshot.docs) {
+            const request = doc.data() || {};
 
-        for (
-            const doc of snapshot.docs
-        ) {
+            const card = makeCard("Contact Request");
 
-            const request =
-                doc.data();
+            addField(card, "Worker", request.workerName);
 
+            addField(
+                card,
+                "Status",
+                request.status || "Pending"
+            );
 
-            let workerPhone = "";
-
-
-            if (
-                request.status === "Approved"
-            ) {
-
-                const workerDoc =
-                    await db
+            if (request.status === "Approved") {
+                try {
+                    const workerDoc = await db
                         .collection("workers")
                         .doc(request.workerId)
                         .get();
 
+                    if (workerDoc.exists) {
+                        const worker = workerDoc.data() || {};
 
-                if (
-                    workerDoc.exists
-                ) {
+                        addField(
+                            card,
+                            "Worker Phone",
+                            worker.phone || ""
+                        );
 
-                    const worker =
-                        workerDoc.data();
+                        addText(
+                            card,
+                            "p",
+                            "Your request was approved. You can now contact the worker."
+                        );
 
-
-                    workerPhone =
-                        worker.phone || "";
-
-                }
-
-            }
-
-
-            results.innerHTML += `
-
-                <div class="card">
-
-                    <h3>
-                        Contact Request
-                    </h3>
-
-                    <p>
-                        <strong>
-                            Worker:
-                        </strong>
-
-                        ${request.workerName || ""}
-                    </p>
-
-                    <p>
-                        <strong>
-                            Status:
-                        </strong>
-
-                        ${request.status || "Pending"}
-                    </p>
-
-
-                    ${
-                        request.status === "Approved"
-
-                        ? `
-
-                            <p>
-                                <strong>
-                                    Worker Phone:
-                                </strong>
-
-                                ${workerPhone}
-                            </p>
-
-                            <p>
-                                ✅ You can now
-                                contact the worker.
-                            </p>
-
-                        `
-
-                        : request.status === "Rejected"
-
-                        ? `
-
-                            <p>
-                                ❌ Your request
-                                was rejected.
-                            </p>
-
-                        `
-
-                        : `
-
-                            <p>
-                                ⏳ Your request is
-                                waiting for admin
-                                approval.
-                            </p>
-
-                        `
+                    } else {
+                        addText(
+                            card,
+                            "p",
+                            "The worker record is no longer available."
+                        );
                     }
 
-                </div>
+                } catch (workerError) {
+                    console.error(
+                        "Could not retrieve worker contact:",
+                        workerError
+                    );
 
-            `;
+                    addText(
+                        card,
+                        "p",
+                        "Your request is approved, but the contact details could not be loaded."
+                    );
+                }
 
+            } else if (request.status === "Rejected") {
+                addText(
+                    card,
+                    "p",
+                    "Your request was rejected."
+                );
+
+            } else {
+                addText(
+                    card,
+                    "p",
+                    "Your request is waiting for admin approval."
+                );
+            }
+
+            results.appendChild(card);
         }
 
-    }
+    } catch (error) {
+        console.error("Status check error:", error);
 
-    catch (error) {
-
-        console.error(
-            "Status check error:",
-            error
+        showMessage(
+            results,
+            "Unable to check status. Please try again.",
+            "h3"
         );
-
-
-        results.innerHTML =
-            "<h3>Unable to check status.</h3>";
-
     }
-
 }
 
-
 // ==========================================
-// START
+// START: LOAD DATA ON EACH RELEVANT PAGE
 // ==========================================
 
-loadWorkers();
+function initializeBesnosJobs() {
+    loadWorkers();
+    loadPublicWorkers();
+    loadContactRequests();
+}
 
-loadPublicWorkers();
-
-loadContactRequests();
+if (document.readyState === "loading") {
+    document.addEventListener(
+        "DOMContentLoaded",
+        initializeBesnosJobs
+    );
+} else {
+    initializeBesnosJobs();
+}
