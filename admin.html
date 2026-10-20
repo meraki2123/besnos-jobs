@@ -1,7 +1,9 @@
-<!DOCTYPE html>
-<html>
 
+<!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Besnos Jobs</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -10,75 +12,46 @@
 
 <nav>
     <h2>Besnos Jobs Admin</h2>
-
     <div>
         <a href="index.html">Home</a>
         <a href="admin.html">Dashboard</a>
         <a href="browse-workers.html">Browse Workers</a>
+        <button type="button" onclick="adminLogout()">Log Out</button>
     </div>
 </nav>
 
-
-<!-- Worker registrations -->
-
 <section class="hero">
-
     <h1>Worker Approval Dashboard</h1>
-
     <p>Review worker registrations.</p>
-
 </section>
-
 
 <section class="cards" id="workerList">
-
     <h3>Loading workers...</h3>
-
 </section>
-
-
-<!-- Contact requests -->
 
 <section class="hero">
-
     <h1>Contact Requests</h1>
-
     <p>Manage requests from employers.</p>
-
 </section>
-
 
 <section class="cards" id="requestList">
-
     <h3>Loading contact requests...</h3>
-
 </section>
 
-
 <footer>
-
     <p>© 2026 Besnos Jobs</p>
-
 </footer>
 
+<!-- Use the same Firebase version as admin-login.html -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
-<!-- Firebase -->
-
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
-
-<!-- Firebase configuration -->
-
+<!-- Initialize Firebase -->
 <script src="firebase.js"></script>
 
-
-<!-- Besnos Jobs JavaScript -->
-
+<!-- Website functions -->
 <script src="script.js"></script>
 
-
 </body>
-
 </html>
